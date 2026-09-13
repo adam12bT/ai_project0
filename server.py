@@ -395,11 +395,6 @@ class ApiHandler(BaseHTTPRequestHandler):
                 "error": "model_key must be one of: top, cheap, open (same roles as src/run.py)."
             }, 400)
 
-        TEST_STATUS.update({
-            "status": "running", "completed": 0, "total": len(items),
-            "correct": 0, "model_key": model_key, "model": model,
-            "started_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        })
         cfg = run_module.MODEL_CONFIG[model_key]
         provider, model = cfg["provider"], cfg["model"]
         if provider == "ollama" and OLLAMA_DISABLED:
@@ -410,6 +405,12 @@ class ApiHandler(BaseHTTPRequestHandler):
             return self.send_json({"error": "Upload a JSONL file with test items first."}, 400)
         if len(items) > 100:
             return self.send_json({"error": "The browser runner allows a maximum of 100 test items."}, 400)
+
+        TEST_STATUS.update({
+            "status": "running", "completed": 0, "total": len(items),
+            "correct": 0, "model_key": model_key, "model": model,
+            "started_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        })
 
         log(f"Starting test run: model_key={model_key} ({provider}/{model}), {len(items)} items")
         rows = []
