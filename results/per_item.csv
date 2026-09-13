@@ -1,0 +1,1032 @@
+model_key,model_name,item_id,question,raw_output,correct,reason,latency_ms,input_tokens,output_tokens
+open,mistral:latest,item_001,List the names of all artists whose name starts with 'The'., SELECT Name FROM Artist WHERE Name LIKE 'The%';,True,match,11007.7,1806,14
+open,mistral:latest,item_002,What is the email address of the customer named Luís Gonçalves?, SELECT Email FROM Customer WHERE FirstName = 'Luís' AND LastName = 'Gonçalves';,True,match,3000.6,1809,25
+open,mistral:latest,item_003,List all track names that are longer than 300000 milliseconds., SELECT Name FROM Track WHERE Milliseconds > 300000;,True,match,2894.3,1811,18
+open,mistral:latest,item_004,Which employees have the job title 'Sales Support Agent'?," SELECT Employee.EmployeeId, Employee.FirstName, Employee.LastName FROM Employee WHERE Title = 'Sales Support Agent';",False,wrong_result,3352.3,1806,33
+open,mistral:latest,item_005,List all customers who live in Brazil.," SELECT [CustomerId], [FirstName], [LastName] FROM [Customer] WHERE [Country] = 'Brazil';",False,wrong_result,3151.4,1801,29
+open,mistral:latest,item_006,What are the names of all genres?, SELECT Name FROM Genre;,True,match,2558.3,1802,8
+open,mistral:latest,item_007,List all playlists that have 'Music' in their name., SELECT PlaylistId FROM Playlist WHERE Name LIKE '%Music%';,False,wrong_result,2705.4,1806,17
+open,mistral:latest,item_008,Find the track named 'Balls to the Wall'., SELECT TrackId FROM Track WHERE Name = 'Balls to the Wall';,False,wrong_result,2803.6,1804,17
+open,mistral:latest,item_009,List customers from the state of California (CA).," SELECT [CustomerId], [FirstName], [LastName], [Company], [City], [State], [Country], [PostalCode], [Email], [Phone], [Fax] FROM [Customer] WHERE [State] = 'CA';",False,wrong_result,3835.5,1803,54
+open,mistral:latest,item_010,What is the postal code of the employee named Andrew Adams?, SELECT [Email].[PostalCode] FROM [Employee] INNER JOIN [Customer] ON [Employee].[EmployeeId] = [Customer].[SupportRepId] INNER JOIN [Employee] AS [Email] ON [Employee].[ReportsTo] = [Email].[EmployeeId] WHERE [Employee].[FirstName] = 'Andrew' AND [Employee].[LastName] = 'Adams';,False,wrong_result,5304.1,1806,101
+open,mistral:latest,item_011,How many tracks are there in total?, SELECT COUNT(*) FROM Track;,True,match,2571.1,1801,10
+open,mistral:latest,item_012,How many customers are there from Germany?, SELECT COUNT(*) FROM Customer WHERE Country = 'Germany';,True,match,2942.6,1801,17
+open,mistral:latest,item_013,What is the total number of invoices?, SELECT COUNT(*) FROM Invoice;,True,match,2752.4,1803,11
+open,mistral:latest,item_014,What is the average unit price of a track?, SELECT AVG(Track.UnitPrice) FROM Track;,True,match,2707.4,1803,14
+open,mistral:latest,item_015,What is the total sum of all invoice totals?, SELECT SUM(Total) FROM Invoice;,True,match,2680.8,1805,12
+open,mistral:latest,item_016,How many distinct countries do customers come from?, SELECT DISTINCT Country FROM Customer;,False,wrong_result,2633.6,1802,11
+open,mistral:latest,item_017,How many albums does the artist with ArtistId 1 have?, SELECT COUNT(*) FROM Album WHERE ArtistId = 1;,True,match,2802.2,1806,16
+open,mistral:latest,item_018,What is the longest track duration in milliseconds?, SELECT MAX(Milliseconds) FROM Track;,True,match,2771.9,1803,11
+open,mistral:latest,item_019,"What is the shortest track duration in milliseconds, excluding zero?", SELECT MIN(Milliseconds) FROM Track WHERE Milliseconds > 0;,True,match,2980.0,1808,17
+open,mistral:latest,item_020,How many tracks belong to the genre 'Rock'?, SELECT COUNT(*) FROM Track INNER JOIN Genre ON Track.GenreId = Genre.GenreId WHERE Genre.Name = 'Rock';,True,match,3429.8,1805,38
+open,mistral:latest,item_021,List the names of all albums by the artist 'AC/DC'., SELECT Title FROM Album JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = 'AC/DC';,True,match,3352.8,1807,31
+open,mistral:latest,item_022,List the track names on the album 'Facelift'., SELECT Name FROM Track INNER JOIN Album ON Track.AlbumId = Album.AlbumId WHERE Album.Title = 'Facelift';,True,match,3360.1,1805,33
+open,mistral:latest,item_023,Which genre does the track 'Fast As a Shark' belong to?, SELECT GenreId FROM Track WHERE Name = 'Fast As a Shark';,False,wrong_result,2909.7,1808,18
+open,mistral:latest,item_024,List the first and last names of customers along with the city of their support representative.," SELECT Customer.FirstName, Customer.LastName, Employee.City
+   FROM Customer
+   JOIN Employee ON Customer.SupportRepId = Employee.EmployeeId;",True,match,3564.2,1810,41
+open,mistral:latest,item_025,List all track names along with their media type name.," SELECT Track.Name, MediaType.Name FROM Track
+   INNER JOIN MediaType ON Track.MediaTypeId = MediaType.MediaTypeId;",False,wrong_result,3355.2,1804,35
+open,mistral:latest,item_026,List the names of tracks in the playlist called 'Music'., SELECT Track.Name FROM Track INNER JOIN PlaylistTrack ON Track.TrackId = PlaylistTrack.TrackId INNER JOIN Playlist ON PlaylistTrack.PlaylistId = Playlist.PlaylistId WHERE Playlist.Name = 'Music';,False,wrong_result,4241.5,1806,57
+open,mistral:latest,item_027,What is the total amount billed to each customer named 'Frank Harris'?," SELECT CustomerId, SUM(Invoice.Total) as TotalBilled
+   FROM Customer
+   JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId
+   WHERE Customer.FirstName = 'Frank' AND Customer.LastName = 'Harris'
+   GROUP BY CustomerId;",False,execution_error: ambiguous column name: CustomerId,4586.4,1810,71
+open,mistral:latest,item_028,List the names of employees and the first names of the employees they report to.," SELECT e1.LastName AS EmployeeName, e2.FirstName AS ReportingEmployeeFirstName
+   FROM Employee e1
+   JOIN Employee e2 ON e1.ReportsTo = e2.EmployeeId;",False,wrong_result,4398.6,1809,55
+open,mistral:latest,item_029,"List all invoice lines for the track named 'Right Next Door to Hell', showing quantity and unit price."," SELECT InvoiceLine.Quantity, InvoiceLine.UnitPrice
+   FROM InvoiceLine
+   INNER JOIN Track ON InvoiceLine.TrackId = Track.TrackId
+   WHERE Track.Name = 'Right Next Door to Hell';",True,match,4531.0,1815,55
+open,mistral:latest,item_030,List the album title and artist name for the track 'Go Down'.," SELECT Album.Title, Artist.Name FROM Track
+   INNER JOIN Album ON Track.AlbumId = Album.AlbumId
+   INNER JOIN Artist ON Album.ArtistId = Artist.ArtistId
+   WHERE Track.Name = 'Go Down';",True,match,4779.8,1807,61
+open,mistral:latest,item_031,"For each country, how many customers are there? Order by count descending."," SELECT Country, COUNT(CustomerId) as CustomerCount FROM Customer
+   INNER JOIN Employee ON Customer.SupportRepId = Employee.EmployeeId
+   INNER JOIN [Address] ON Customer.Address = [Address].Address
+   GROUP BY Country
+   ORDER BY CustomerCount DESC;",False,execution_error: no such table: Address,4610.8,1809,72
+open,mistral:latest,item_032,"For each genre, how many tracks are there? Order by genre name."," SELECT Genre.Name, COUNT(Track.TrackId) AS TrackCount
+    FROM Genre
+    JOIN Track ON Genre.GenreId = Track.GenreId
+    GROUP BY Genre.Name
+    ORDER BY Genre.Name;",True,match,4329.8,1808,62
+open,mistral:latest,item_033,Which countries have more than 5 customers?," SELECT City, Country FROM Customer GROUP BY City, Country HAVING COUNT(CustomerId) > 5;",False,wrong_result,3241.4,1802,28
+open,mistral:latest,item_034,"For each artist, how many albums do they have? Show only artists with more than 5 albums."," SELECT Artist.Name, COUNT(Album.AlbumId) as NumberOfAlbums
+   FROM Artist
+   JOIN Album ON Artist.ArtistId = Album.ArtistId
+   GROUP BY Artist.ArtistId
+   HAVING COUNT(Album.AlbumId) > 5;",True,match,5168.9,1814,74
+open,mistral:latest,item_035,What is the total sales amount for each employee (by their supported customers' invoices)?," SELECT Employee.LastName, Employee.FirstName, SUM(Invoice.Total) as TotalSales
+   FROM Employee
+   JOIN Customer ON Employee.EmployeeId = Customer.SupportRepId
+   JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId
+   GROUP BY Employee.EmployeeId, Employee.LastName, Employee.FirstName;",False,wrong_result,6658.4,1812,92
+open,mistral:latest,item_036,"For each media type, how many tracks use it?"," SELECT MediaTypeId, COUNT(TrackId) AS TrackCount FROM Track GROUP BY MediaTypeId;",False,wrong_result,3363.1,1804,26
+open,mistral:latest,item_037,Which playlists have more than 500 tracks?," SELECT PlaylistId FROM PlaylistTrack
+   INNER JOIN Track ON PlaylistTrack.TrackId = Track.TrackId
+   GROUP BY PlaylistId
+   HAVING COUNT(TrackId) > 500;",False,execution_error: ambiguous column name: TrackId,4097.9,1805,55
+open,mistral:latest,item_038,"For each billing country, what is the total invoice amount?"," SELECT Invoice.BillingCountry, SUM(Invoice.Total) as TotalInvoiceAmount
+   FROM Invoice
+   GROUP BY Invoice.BillingCountry;",True,match,3750.5,1807,41
+open,mistral:latest,item_039,How many albums does each artist have? Show only artists with exactly 1 album.," SELECT Artist.Name, COUNT(Album.AlbumId) as NumberOfAlbums
+   FROM Artist
+   JOIN Album ON Artist.ArtistId = Album.ArtistId
+   GROUP BY Artist.ArtistId
+   HAVING COUNT(Album.AlbumId) = 1;",True,match,5058.4,1810,74
+open,mistral:latest,item_040,What is the average track length in milliseconds for each genre?," SELECT GenreId, AVG(Milliseconds) AS AverageTrackLength
+   FROM Track
+   JOIN Genre ON Track.GenreId = Genre.GenreId
+   GROUP BY GenreId;",False,execution_error: ambiguous column name: GenreId,3958.0,1806,50
+open,mistral:latest,item_041,What are the 5 most expensive tracks?," SELECT TrackId, Name, UnitPrice
+   FROM Track
+   ORDER BY UnitPrice DESC
+   LIMIT 5;",False,wrong_result,3346.1,1802,29
+open,mistral:latest,item_042,Who are the top 3 customers by total amount spent?," SELECT CustomerId, FirstName, LastName, SUM(Total) as TotalSpent
+   FROM Invoice INNER JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId
+   INNER JOIN Track ON InvoiceLine.TrackId = Track.TrackId
+   INNER JOIN Album ON Track.AlbumId = Album.AlbumId
+   INNER JOIN Customer ON Invoice.CustomerId = Customer.CustomerId
+   GROUP BY CustomerId, FirstName, LastName
+   ORDER BY TotalSpent DESC
+   LIMIT 3;",False,execution_error: ambiguous column name: CustomerId,7731.1,1805,134
+open,mistral:latest,item_043,What are the 10 longest tracks by duration?," SELECT TrackId, Name, Milliseconds FROM Track ORDER BY Milliseconds DESC LIMIT 10;",False,wrong_result,3147.2,1804,24
+open,mistral:latest,item_044,Which 5 genres have the most tracks?," SELECT GenreId, COUNT(TrackId) as TrackCount
+   FROM Track
+   GROUP BY GenreId
+   ORDER BY TrackCount DESC
+   LIMIT 5;",False,wrong_result,3754.6,1803,44
+open,mistral:latest,item_045,What are the 3 best-selling tracks by total quantity sold?," SELECT TrackId, Name, SUM(Quantity) as TotalQuantitySold
+   FROM InvoiceLine
+   JOIN Track ON InvoiceLine.TrackId = Track.TrackId
+   GROUP BY TrackId, Name
+   ORDER BY TotalQuantitySold DESC
+   LIMIT 3;",False,execution_error: ambiguous column name: TrackId,4963.8,1807,71
+open,mistral:latest,item_046,Which artist has the most albums?," SELECT Artist.Name
+   FROM Artist
+   JOIN Album ON Artist.ArtistId = Album.ArtistId
+   GROUP BY Artist.Name
+   ORDER BY COUNT(Album.AlbumId) DESC
+   LIMIT 1;",False,wrong_result,3936.3,1800,59
+open,mistral:latest,item_047,What are the 5 most recent invoices by date?, SELECT * FROM Invoice ORDER BY InvoiceDate DESC LIMIT 5;,False,wrong_result,3070.7,1806,19
+open,mistral:latest,item_048,Which 5 customers have the most invoices?," SELECT CustomerId, COUNT(InvoiceId) as InvoiceCount
+   FROM Invoice
+   JOIN Customer ON Invoice.CustomerId = Customer.CustomerId
+   GROUP BY CustomerId
+   ORDER BY InvoiceCount DESC
+   LIMIT 5;",False,execution_error: ambiguous column name: CustomerId,4477.5,1804,62
+open,mistral:latest,item_049,List the names of tracks that have never appeared on any invoice.," SELECT Track.Name
+    FROM Track
+    LEFT JOIN InvoiceLine ON Track.TrackId = InvoiceLine.TrackId
+    WHERE InvoiceLine.TrackId IS NULL;",False,wrong_result,4087.2,1807,43
+open,mistral:latest,item_050,Which customers have spent more than the average total per invoice?," SELECT CustomerId
+    FROM Invoice
+    JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId
+    GROUP BY CustomerId
+    HAVING SUM(InvoiceLine.UnitPrice * InvoiceLine.Quantity) / COUNT(InvoiceLine.InvoiceId) * (SELECT AVG(Total) FROM Invoice) > (SELECT AVG(Total) FROM Invoice);",False,wrong_result,5801.5,1806,98
+open,mistral:latest,item_051,List all invoices billed in the year 2021.," SELECT InvoiceId, InvoiceDate FROM Invoice WHERE STRFTIME('%Y', InvoiceDate) = '2021';",False,wrong_result,3421.1,1809,32
+open,mistral:latest,item_052,What distinct billing countries appear in the invoices?, SELECT DISTINCT BillingCountry FROM Invoice;,True,match,2972.7,1805,14
+open,mistral:latest,item_053,List artists who have no albums in the database.," SELECT Name FROM Artist
+   LEFT JOIN Album ON Artist.ArtistId = Album.ArtistId
+   WHERE Album.AlbumId IS NULL;",True,match,3891.0,1803,36
+cheap,openai/gpt-oss-20b,item_001,List the names of all artists whose name starts with 'The'.,SELECT Name FROM Artist WHERE Name LIKE 'The%';,True,match,384.0,1343,90
+cheap,openai/gpt-oss-20b,item_002,What is the email address of the customer named Luís Gonçalves?,SELECT Email FROM Customer WHERE FirstName='Luís' AND LastName='Gonçalves';,True,match,792.5,1344,128
+cheap,openai/gpt-oss-20b,item_003,List all track names that are longer than 300000 milliseconds.,SELECT Name FROM Track WHERE Milliseconds > 300000;,True,match,553.9,1343,70
+cheap,openai/gpt-oss-20b,item_004,Which employees have the job title 'Sales Support Agent'?,"SELECT EmployeeId, FirstName, LastName, Title FROM Employee WHERE Title = 'Sales Support Agent';",False,wrong_result,642.6,1342,157
+cheap,openai/gpt-oss-20b,item_005,List all customers who live in Brazil.,SELECT * FROM Customer WHERE Country = 'Brazil';,False,wrong_result,398.2,1338,74
+cheap,openai/gpt-oss-20b,item_006,What are the names of all genres?,SELECT Name FROM Genre;,True,match,464.3,1338,72
+cheap,openai/gpt-oss-20b,item_007,List all playlists that have 'Music' in their name.,"SELECT PlaylistId, Name FROM Playlist WHERE Name LIKE '%Music%';",False,wrong_result,725.2,1342,163
+cheap,openai/gpt-oss-20b,item_008,Find the track named 'Balls to the Wall'.,SELECT * FROM Track WHERE Name = 'Balls to the Wall';,False,wrong_result,563.1,1340,108
+cheap,openai/gpt-oss-20b,item_009,List customers from the state of California (CA).,SELECT * FROM Customer WHERE State = 'CA';,False,wrong_result,498.8,1340,101
+cheap,openai/gpt-oss-20b,item_010,What is the postal code of the employee named Andrew Adams?,SELECT PostalCode FROM Employee WHERE FirstName = 'Andrew' AND LastName = 'Adams';,True,match,483.9,1342,117
+cheap,openai/gpt-oss-20b,item_011,How many tracks are there in total?,SELECT COUNT(*) FROM Track;,True,match,512.6,1338,35
+cheap,openai/gpt-oss-20b,item_012,How many customers are there from Germany?,SELECT COUNT(*) FROM Customer WHERE Country = 'Germany';,True,match,562.4,1338,48
+cheap,openai/gpt-oss-20b,item_013,What is the total number of invoices?,SELECT COUNT(*) AS TotalInvoices FROM Invoice;,True,match,466.1,1338,59
+cheap,openai/gpt-oss-20b,item_014,What is the average unit price of a track?,SELECT AVG(UnitPrice) FROM Track;,True,match,598.1,1340,49
+cheap,openai/gpt-oss-20b,item_015,What is the total sum of all invoice totals?,SELECT SUM(Total) FROM Invoice;,True,match,306.2,1340,62
+cheap,openai/gpt-oss-20b,item_016,How many distinct countries do customers come from?,SELECT COUNT(DISTINCT Country) FROM Customer;,True,match,538.9,1339,46
+cheap,openai/gpt-oss-20b,item_017,How many albums does the artist with ArtistId 1 have?,SELECT COUNT(*) FROM Album WHERE ArtistId = 1;,True,match,533.4,1343,71
+cheap,openai/gpt-oss-20b,item_018,What is the longest track duration in milliseconds?,SELECT MAX(Milliseconds) AS MaxDuration FROM Track;,True,match,323.2,1339,82
+cheap,openai/gpt-oss-20b,item_019,"What is the shortest track duration in milliseconds, excluding zero?",SELECT MIN(Milliseconds) AS ShortestDuration FROM Track WHERE Milliseconds > 0;,True,match,485.5,1342,146
+cheap,openai/gpt-oss-20b,item_020,How many tracks belong to the genre 'Rock'?,SELECT COUNT(*) FROM Track t JOIN Genre g ON t.GenreId = g.GenreId WHERE g.Name = 'Rock';,True,match,501.0,1341,114
+cheap,openai/gpt-oss-20b,item_021,List the names of all albums by the artist 'AC/DC'.,"SELECT a.Title
+FROM Album a
+JOIN Artist ar ON a.ArtistId = ar.ArtistId
+WHERE ar.Name = 'AC/DC';",True,match,427.4,1343,133
+cheap,openai/gpt-oss-20b,item_022,List the track names on the album 'Facelift'.,"SELECT t.Name
+FROM Track t
+JOIN Album a ON t.AlbumId = a.AlbumId
+WHERE a.Title = 'Facelift';",True,match,483.8,1341,139
+cheap,openai/gpt-oss-20b,item_023,Which genre does the track 'Fast As a Shark' belong to?,"SELECT g.Name AS GenreName
+FROM Track t
+JOIN Genre g ON t.GenreId = g.GenreId
+WHERE t.Name = 'Fast As a Shark';",True,match,490.9,1344,213
+cheap,openai/gpt-oss-20b,item_024,List the first and last names of customers along with the city of their support representative.,"SELECT c.FirstName, c.LastName, e.City
+FROM Customer c
+LEFT JOIN Employee e ON c.SupportRepId = e.EmployeeId;",True,match,620.2,1347,185
+cheap,openai/gpt-oss-20b,item_025,List all track names along with their media type name.,"SELECT t.Name AS TrackName, m.Name AS MediaTypeName
+FROM Track t
+JOIN MediaType m ON t.MediaTypeId = m.MediaTypeId;",False,wrong_result,615.2,1341,156
+cheap,openai/gpt-oss-20b,item_026,List the names of tracks in the playlist called 'Music'.,"SELECT t.Name
+FROM Track t
+JOIN PlaylistTrack pt ON t.TrackId = pt.TrackId
+JOIN Playlist p ON pt.PlaylistId = p.PlaylistId
+WHERE p.Name = 'Music';",False,wrong_result,551.2,1342,160
+cheap,openai/gpt-oss-20b,item_027,What is the total amount billed to each customer named 'Frank Harris'?,"SELECT Customer.CustomerId, Customer.FirstName, Customer.LastName, SUM(Invoice.Total) AS TotalBilled
+FROM Customer
+JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId
+WHERE Customer.FirstName = 'Frank' AND Customer.LastName = 'Harris'
+GROUP BY Customer.CustomerId, Customer.FirstName, Customer.LastName;",False,wrong_result,599.3,1345,231
+cheap,openai/gpt-oss-20b,item_028,List the names of employees and the first names of the employees they report to.,"SELECT e1.LastName || ' ' || e1.FirstName AS EmployeeName, e2.FirstName AS ManagerFirstName
+FROM Employee e1
+JOIN Employee e2 ON e1.ReportsTo = e2.EmployeeId;",False,wrong_result,818.4,1346,362
+cheap,openai/gpt-oss-20b,item_029,"List all invoice lines for the track named 'Right Next Door to Hell', showing quantity and unit price.","SELECT il.Quantity, il.UnitPrice
+FROM InvoiceLine il
+JOIN Track t ON il.TrackId = t.TrackId
+WHERE t.Name = 'Right Next Door to Hell';",True,match,553.1,1351,220
+cheap,openai/gpt-oss-20b,item_030,List the album title and artist name for the track 'Go Down'.,"SELECT Album.Title, Artist.Name
+FROM Track
+JOIN Album ON Track.AlbumId = Album.AlbumId
+JOIN Artist ON Album.ArtistId = Artist.ArtistId
+WHERE Track.Name = 'Go Down';",True,match,1228.6,1344,235
+cheap,openai/gpt-oss-20b,item_031,"For each country, how many customers are there? Order by count descending.","SELECT Country, COUNT(*) AS CustomerCount FROM Customer GROUP BY Country ORDER BY CustomerCount DESC;",True,match,514.7,1345,119
+cheap,openai/gpt-oss-20b,item_032,"For each genre, how many tracks are there? Order by genre name.","SELECT g.Name AS Genre, COUNT(t.TrackId) AS TrackCount
+FROM Genre g
+LEFT JOIN Track t ON t.GenreId = g.GenreId
+GROUP BY g.GenreId, g.Name
+ORDER BY g.Name;",True,match,694.6,1345,221
+cheap,openai/gpt-oss-20b,item_033,Which countries have more than 5 customers?,SELECT Country FROM Customer GROUP BY Country HAVING COUNT(*) > 5;,False,wrong_result,314.2,1339,134
+cheap,openai/gpt-oss-20b,item_034,"For each artist, how many albums do they have? Show only artists with more than 5 albums.","SELECT a.Name, COUNT(*) AS AlbumCount
+FROM Album al
+JOIN Artist a ON al.ArtistId = a.ArtistId
+GROUP BY a.ArtistId, a.Name
+HAVING COUNT(*) > 5;",True,match,566.2,1351,136
+cheap,openai/gpt-oss-20b,item_035,What is the total sales amount for each employee (by their supported customers' invoices)?,"SELECT e.EmployeeId, e.FirstName, e.LastName, SUM(i.Total) AS TotalSales
+FROM Employee e
+JOIN Customer c ON c.SupportRepId = e.EmployeeId
+JOIN Invoice i ON i.CustomerId = c.CustomerId
+GROUP BY e.EmployeeId, e.FirstName, e.LastName
+ORDER BY TotalSales DESC;",False,wrong_result,687.4,1347,275
+cheap,openai/gpt-oss-20b,item_036,"For each media type, how many tracks use it?","SELECT MediaType.Name, COUNT(Track.TrackId) AS TrackCount
+FROM MediaType
+LEFT JOIN Track ON MediaType.MediaTypeId = Track.MediaTypeId
+GROUP BY MediaType.MediaTypeId, MediaType.Name
+ORDER BY MediaType.MediaTypeId;",True,match,741.4,1341,254
+cheap,openai/gpt-oss-20b,item_037,Which playlists have more than 500 tracks?,"SELECT p.PlaylistId, p.Name
+FROM Playlist p
+JOIN PlaylistTrack pt ON p.PlaylistId = pt.PlaylistId
+GROUP BY p.PlaylistId, p.Name
+HAVING COUNT(pt.TrackId) > 500;",False,wrong_result,501.4,1339,157
+cheap,openai/gpt-oss-20b,item_038,"For each billing country, what is the total invoice amount?","SELECT BillingCountry, SUM(Total) AS TotalAmount FROM Invoice GROUP BY BillingCountry;",True,match,496.9,1342,121
+cheap,openai/gpt-oss-20b,item_039,How many albums does each artist have? Show only artists with exactly 1 album.,"SELECT a.Name, COUNT(al.AlbumId) AS AlbumCount
+FROM Artist a
+JOIN Album al ON a.ArtistId = al.ArtistId
+GROUP BY a.ArtistId, a.Name
+HAVING COUNT(al.AlbumId) = 1;",True,match,550.2,1347,300
+cheap,openai/gpt-oss-20b,item_040,What is the average track length in milliseconds for each genre?,"SELECT g.Name AS Genre, AVG(t.Milliseconds) AS AvgMilliseconds
+FROM Track t
+JOIN Genre g ON t.GenreId = g.GenreId
+GROUP BY g.GenreId, g.Name;",True,match,492.6,1342,146
+cheap,openai/gpt-oss-20b,item_041,What are the 5 most expensive tracks?,"SELECT TrackId, Name, UnitPrice FROM Track ORDER BY UnitPrice DESC LIMIT 5;",False,wrong_result,468.1,1339,95
+cheap,openai/gpt-oss-20b,item_042,Who are the top 3 customers by total amount spent?,"SELECT c.FirstName, c.LastName, SUM(i.Total) AS TotalSpent
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId, c.FirstName, c.LastName
+ORDER BY TotalSpent DESC
+LIMIT 3;",True,match,540.3,1342,173
+cheap,openai/gpt-oss-20b,item_043,What are the 10 longest tracks by duration?,"SELECT Name, Milliseconds FROM Track ORDER BY Milliseconds DESC LIMIT 10;",True,match,552.5,1340,156
+cheap,openai/gpt-oss-20b,item_044,Which 5 genres have the most tracks?,"SELECT g.Name, COUNT(t.TrackId) AS TrackCount
+FROM Track t
+JOIN Genre g ON t.GenreId = g.GenreId
+GROUP BY g.GenreId, g.Name
+ORDER BY TrackCount DESC
+LIMIT 5;",True,match,581.2,1339,215
+cheap,openai/gpt-oss-20b,item_045,What are the 3 best-selling tracks by total quantity sold?,"SELECT t.Name, SUM(il.Quantity) AS TotalQuantity
+FROM InvoiceLine il
+JOIN Track t ON il.TrackId = t.TrackId
+GROUP BY t.TrackId, t.Name
+ORDER BY TotalQuantity DESC
+LIMIT 3;",True,match,441.4,1343,159
+cheap,openai/gpt-oss-20b,item_046,Which artist has the most albums?,"SELECT a.Name, COUNT(*) AS AlbumCount
+FROM Album al
+JOIN Artist a ON al.ArtistId = a.ArtistId
+GROUP BY a.ArtistId, a.Name
+ORDER BY AlbumCount DESC
+LIMIT 1;",True,match,478.4,1337,169
+cheap,openai/gpt-oss-20b,item_047,What are the 5 most recent invoices by date?,"SELECT InvoiceId, CustomerId, InvoiceDate, Total FROM Invoice ORDER BY InvoiceDate DESC LIMIT 5;",False,wrong_result,498.0,1341,107
+cheap,openai/gpt-oss-20b,item_048,Which 5 customers have the most invoices?,"SELECT c.CustomerId, c.FirstName, c.LastName, COUNT(i.InvoiceId) AS InvoiceCount
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId, c.FirstName, c.LastName
+ORDER BY InvoiceCount DESC
+LIMIT 5;",False,wrong_result,479.2,1339,215
+cheap,openai/gpt-oss-20b,item_049,List the names of tracks that have never appeared on any invoice.,SELECT Name FROM Track WHERE NOT EXISTS (SELECT 1 FROM InvoiceLine WHERE InvoiceLine.TrackId = Track.TrackId);,False,wrong_result,558.9,1343,100
+cheap,openai/gpt-oss-20b,item_050,Which customers have spent more than the average total per invoice?,"SELECT c.CustomerId, c.FirstName, c.LastName, SUM(i.Total) AS TotalSpent
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId, c.FirstName, c.LastName
+HAVING SUM(i.Total) > (SELECT AVG(Total) FROM Invoice);",False,wrong_result,769.6,1342,321
+cheap,openai/gpt-oss-20b,item_051,List all invoices billed in the year 2021.,"SELECT * FROM Invoice WHERE strftime('%Y', InvoiceDate) = '2021';",False,wrong_result,524.4,1341,167
+cheap,openai/gpt-oss-20b,item_052,What distinct billing countries appear in the invoices?,SELECT DISTINCT BillingCountry FROM Invoice;,True,match,456.5,1339,46
+cheap,openai/gpt-oss-20b,item_053,List artists who have no albums in the database.,"SELECT a.Name
+FROM Artist a
+LEFT JOIN Album al ON a.ArtistId = al.ArtistId
+WHERE al.AlbumId IS NULL;",True,match,434.0,1340,133
+top,openai/gpt-oss-120b,item_001,List the names of all artists whose name starts with 'The'.,SELECT Name FROM Artist WHERE Name LIKE 'The%';,True,match,597.4,1343,88
+top,openai/gpt-oss-120b,item_002,What is the email address of the customer named Luís Gonçalves?,SELECT Email FROM Customer WHERE FirstName = 'Luís' AND LastName = 'Gonçalves';,True,match,672.7,1344,101
+top,openai/gpt-oss-120b,item_003,List all track names that are longer than 300000 milliseconds.,SELECT Name FROM Track WHERE Milliseconds > 300000;,True,match,512.1,1343,90
+top,openai/gpt-oss-120b,item_004,Which employees have the job title 'Sales Support Agent'?,"SELECT EmployeeId, FirstName, LastName, Title FROM Employee WHERE Title = 'Sales Support Agent';",False,wrong_result,589.4,1342,108
+top,openai/gpt-oss-120b,item_005,List all customers who live in Brazil.,SELECT * FROM Customer WHERE Country = 'Brazil';,False,wrong_result,600.4,1338,95
+top,openai/gpt-oss-120b,item_006,What are the names of all genres?,SELECT Name FROM Genre;,True,match,541.1,1338,64
+top,openai/gpt-oss-120b,item_007,List all playlists that have 'Music' in their name.,"SELECT PlaylistId, Name FROM Playlist WHERE Name LIKE '%Music%';",False,wrong_result,614.3,1342,97
+top,openai/gpt-oss-120b,item_008,Find the track named 'Balls to the Wall'.,SELECT * FROM Track WHERE Name = 'Balls to the Wall';,False,wrong_result,614.1,1340,86
+top,openai/gpt-oss-120b,item_009,List customers from the state of California (CA).,SELECT * FROM Customer WHERE State = 'CA';,False,wrong_result,622.6,1340,114
+top,openai/gpt-oss-120b,item_010,What is the postal code of the employee named Andrew Adams?,SELECT PostalCode FROM Employee WHERE FirstName = 'Andrew' AND LastName = 'Adams';,True,match,579.1,1342,98
+top,openai/gpt-oss-120b,item_011,How many tracks are there in total?,SELECT COUNT(*) FROM Track;,True,match,498.5,1338,41
+top,openai/gpt-oss-120b,item_012,How many customers are there from Germany?,SELECT COUNT(*) FROM Customer WHERE Country = 'Germany';,True,match,333.6,1338,50
+top,openai/gpt-oss-120b,item_013,What is the total number of invoices?,SELECT COUNT(*) AS TotalInvoices FROM Invoice;,True,match,320.9,1338,49
+top,openai/gpt-oss-120b,item_014,What is the average unit price of a track?,SELECT AVG(UnitPrice) AS AverageUnitPrice FROM Track;,True,match,443.3,1340,61
+top,openai/gpt-oss-120b,item_015,What is the total sum of all invoice totals?,SELECT SUM(Total) AS TotalSum FROM Invoice;,True,match,386.8,1340,59
+top,openai/gpt-oss-120b,item_016,How many distinct countries do customers come from?,SELECT COUNT(DISTINCT Country) FROM Customer;,True,match,653.2,1339,53
+top,openai/gpt-oss-120b,item_017,How many albums does the artist with ArtistId 1 have?,SELECT COUNT(*) FROM Album WHERE ArtistId = 1;,True,match,546.6,1343,62
+top,openai/gpt-oss-120b,item_018,What is the longest track duration in milliseconds?,SELECT MAX(Milliseconds) AS LongestDuration FROM Track;,True,match,485.7,1339,61
+top,openai/gpt-oss-120b,item_019,"What is the shortest track duration in milliseconds, excluding zero?",SELECT MIN(Milliseconds) AS ShortestDuration FROM Track WHERE Milliseconds > 0;,True,match,550.3,1342,78
+top,openai/gpt-oss-120b,item_020,How many tracks belong to the genre 'Rock'?,SELECT COUNT(*) FROM Track t JOIN Genre g ON t.GenreId = g.GenreId WHERE g.Name = 'Rock';,True,match,553.2,1341,117
+top,openai/gpt-oss-120b,item_021,List the names of all albums by the artist 'AC/DC'.,SELECT Title FROM Album JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = 'AC/DC';,True,match,521.0,1343,127
+top,openai/gpt-oss-120b,item_022,List the track names on the album 'Facelift'.,"SELECT t.Name
+FROM Track t
+JOIN Album a ON t.AlbumId = a.AlbumId
+WHERE a.Title = 'Facelift';",True,match,705.4,1341,131
+top,openai/gpt-oss-120b,item_023,Which genre does the track 'Fast As a Shark' belong to?,"SELECT Genre.Name
+FROM Track
+JOIN Genre ON Track.GenreId = Genre.GenreId
+WHERE Track.Name = 'Fast As a Shark';",True,match,1154.0,1344,167
+top,openai/gpt-oss-120b,item_024,List the first and last names of customers along with the city of their support representative.,"SELECT c.FirstName, c.LastName, e.City
+FROM Customer AS c
+JOIN Employee AS e ON c.SupportRepId = e.EmployeeId;",True,match,623.3,1347,133
+top,openai/gpt-oss-120b,item_025,List all track names along with their media type name.,"SELECT Track.Name AS TrackName, MediaType.Name AS MediaTypeName
+FROM Track
+JOIN MediaType ON Track.MediaTypeId = MediaType.MediaTypeId;",False,wrong_result,924.8,1341,129
+top,openai/gpt-oss-120b,item_026,List the names of tracks in the playlist called 'Music'.,"SELECT DISTINCT t.Name
+FROM Track t
+JOIN PlaylistTrack pt ON t.TrackId = pt.TrackId
+JOIN Playlist p ON pt.PlaylistId = p.PlaylistId
+WHERE p.Name = 'Music';",False,wrong_result,726.3,1342,173
+top,openai/gpt-oss-120b,item_027,What is the total amount billed to each customer named 'Frank Harris'?,"SELECT c.CustomerId, c.FirstName, c.LastName, SUM(i.Total) AS TotalBilled
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+WHERE c.FirstName = 'Frank' AND c.LastName = 'Harris'
+GROUP BY c.CustomerId, c.FirstName, c.LastName;",False,wrong_result,918.3,1345,214
+top,openai/gpt-oss-120b,item_028,List the names of employees and the first names of the employees they report to.,"SELECT e.FirstName || ' ' || e.LastName AS EmployeeName, m.FirstName AS ManagerFirstName
+FROM Employee e
+LEFT JOIN Employee m ON e.ReportsTo = m.EmployeeId;",False,wrong_result,889.1,1346,295
+top,openai/gpt-oss-120b,item_029,"List all invoice lines for the track named 'Right Next Door to Hell', showing quantity and unit price.","SELECT il.Quantity, il.UnitPrice
+FROM InvoiceLine AS il
+JOIN Track AS t ON il.TrackId = t.TrackId
+WHERE t.Name = 'Right Next Door to Hell';",True,match,650.3,1351,181
+top,openai/gpt-oss-120b,item_030,List the album title and artist name for the track 'Go Down'.,"SELECT Album.Title, Artist.Name
+FROM Track
+JOIN Album ON Track.AlbumId = Album.AlbumId
+JOIN Artist ON Album.ArtistId = Artist.ArtistId
+WHERE Track.Name = 'Go Down';",True,match,610.3,1344,187
+top,openai/gpt-oss-120b,item_031,"For each country, how many customers are there? Order by count descending.","SELECT Country, COUNT(*) AS CustomerCount
+FROM Customer
+GROUP BY Country
+ORDER BY CustomerCount DESC;",True,match,587.5,1345,99
+top,openai/gpt-oss-120b,item_032,"For each genre, how many tracks are there? Order by genre name.","SELECT g.Name AS GenreName, COUNT(t.TrackId) AS TrackCount
+FROM Genre g
+LEFT JOIN Track t ON t.GenreId = g.GenreId
+GROUP BY g.GenreId, g.Name
+ORDER BY g.Name;",True,match,949.9,1345,201
+top,openai/gpt-oss-120b,item_033,Which countries have more than 5 customers?,SELECT Country FROM Customer GROUP BY Country HAVING COUNT(*) > 5;,False,wrong_result,694.7,1339,139
+top,openai/gpt-oss-120b,item_034,"For each artist, how many albums do they have? Show only artists with more than 5 albums.","SELECT Artist.Name, COUNT(Album.AlbumId) AS AlbumCount
+FROM Artist
+JOIN Album ON Album.ArtistId = Artist.ArtistId
+GROUP BY Artist.ArtistId, Artist.Name
+HAVING COUNT(Album.AlbumId) > 5;",True,match,806.5,1351,175
+top,openai/gpt-oss-120b,item_035,What is the total sales amount for each employee (by their supported customers' invoices)?,"SELECT e.EmployeeId, e.FirstName, e.LastName, COALESCE(SUM(i.Total), 0) AS TotalSales
+FROM Employee e
+LEFT JOIN Customer c ON c.SupportRepId = e.EmployeeId
+LEFT JOIN Invoice i ON i.CustomerId = c.CustomerId
+GROUP BY e.EmployeeId, e.FirstName, e.LastName
+ORDER BY TotalSales DESC;",False,wrong_result,925.0,1347,261
+top,openai/gpt-oss-120b,item_036,"For each media type, how many tracks use it?","SELECT mt.Name, COUNT(t.TrackId) AS TrackCount
+FROM MediaType mt
+LEFT JOIN Track t ON mt.MediaTypeId = t.MediaTypeId
+GROUP BY mt.MediaTypeId, mt.Name
+ORDER BY mt.MediaTypeId;",True,match,757.2,1341,197
+top,openai/gpt-oss-120b,item_037,Which playlists have more than 500 tracks?,"SELECT p.Name
+FROM Playlist p
+JOIN PlaylistTrack pt ON p.PlaylistId = pt.PlaylistId
+GROUP BY p.PlaylistId, p.Name
+HAVING COUNT(*) > 500;",False,wrong_result,821.6,1339,225
+top,openai/gpt-oss-120b,item_038,"For each billing country, what is the total invoice amount?","SELECT BillingCountry, SUM(Total) AS TotalAmount
+FROM Invoice
+GROUP BY BillingCountry;",True,match,545.3,1342,99
+top,openai/gpt-oss-120b,item_039,How many albums does each artist have? Show only artists with exactly 1 album.,"SELECT a.Name AS ArtistName, COUNT(al.AlbumId) AS AlbumCount
+FROM Artist a
+JOIN Album al ON a.ArtistId = al.ArtistId
+GROUP BY a.ArtistId, a.Name
+HAVING COUNT(al.AlbumId) = 1;",True,match,745.3,1347,229
+top,openai/gpt-oss-120b,item_040,What is the average track length in milliseconds for each genre?,"SELECT g.Name AS GenreName, AVG(t.Milliseconds) AS AverageLengthMilliseconds
+FROM Track t
+JOIN Genre g ON t.GenreId = g.GenreId
+GROUP BY g.Name;",True,match,845.4,1342,148
+top,openai/gpt-oss-120b,item_041,What are the 5 most expensive tracks?,"SELECT TrackId, Name, UnitPrice
+FROM Track
+ORDER BY UnitPrice DESC
+LIMIT 5;",False,wrong_result,557.2,1339,115
+top,openai/gpt-oss-120b,item_042,Who are the top 3 customers by total amount spent?,"SELECT c.CustomerId, c.FirstName, c.LastName, SUM(i.Total) AS TotalSpent
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId, c.FirstName, c.LastName
+ORDER BY TotalSpent DESC
+LIMIT 3;",False,wrong_result,811.3,1342,194
+top,openai/gpt-oss-120b,item_043,What are the 10 longest tracks by duration?,"SELECT Name, Milliseconds
+FROM Track
+ORDER BY Milliseconds DESC
+LIMIT 10;",True,match,704.1,1340,139
+top,openai/gpt-oss-120b,item_044,Which 5 genres have the most tracks?,"SELECT g.Name AS Genre, COUNT(t.TrackId) AS TrackCount
+FROM Genre g
+JOIN Track t ON g.GenreId = t.GenreId
+GROUP BY g.GenreId, g.Name
+ORDER BY TrackCount DESC
+LIMIT 5;",True,match,717.9,1339,211
+top,openai/gpt-oss-120b,item_045,What are the 3 best-selling tracks by total quantity sold?,"SELECT t.Name, SUM(il.Quantity) AS TotalQuantity
+FROM Track t
+JOIN InvoiceLine il ON t.TrackId = il.TrackId
+GROUP BY t.TrackId, t.Name
+ORDER BY TotalQuantity DESC
+LIMIT 3;",True,match,709.5,1343,179
+top,openai/gpt-oss-120b,item_046,Which artist has the most albums?,"SELECT Artist.Name, COUNT(Album.AlbumId) AS AlbumCount
+FROM Artist
+JOIN Album ON Artist.ArtistId = Album.ArtistId
+GROUP BY Artist.ArtistId, Artist.Name
+ORDER BY AlbumCount DESC
+LIMIT 1;",True,match,711.7,1337,201
+top,openai/gpt-oss-120b,item_047,What are the 5 most recent invoices by date?,SELECT * FROM Invoice ORDER BY InvoiceDate DESC LIMIT 5;,False,wrong_result,613.9,1341,104
+top,openai/gpt-oss-120b,item_048,Which 5 customers have the most invoices?,"SELECT c.CustomerId, c.FirstName, c.LastName, COUNT(i.InvoiceId) AS InvoiceCount
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId, c.FirstName, c.LastName
+ORDER BY InvoiceCount DESC
+LIMIT 5;",False,wrong_result,885.6,1339,242
+top,openai/gpt-oss-120b,item_049,List the names of tracks that have never appeared on any invoice.,SELECT Name FROM Track t WHERE NOT EXISTS (SELECT 1 FROM InvoiceLine il WHERE il.TrackId = t.TrackId);,False,wrong_result,778.8,1343,134
+top,openai/gpt-oss-120b,item_050,Which customers have spent more than the average total per invoice?,"SELECT c.CustomerId, c.FirstName, c.LastName, SUM(i.Total) AS TotalSpent
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId, c.FirstName, c.LastName
+HAVING SUM(i.Total) > (SELECT AVG(Total) FROM Invoice);",False,wrong_result,1546.6,1342,604
+top,openai/gpt-oss-120b,item_051,List all invoices billed in the year 2021.,"SELECT * FROM Invoice WHERE strftime('%Y', InvoiceDate) = '2021';",False,wrong_result,591.0,1341,108
+top,openai/gpt-oss-120b,item_052,What distinct billing countries appear in the invoices?,SELECT DISTINCT BillingCountry FROM Invoice;,True,match,657.0,1339,49
+top,openai/gpt-oss-120b,item_053,List artists who have no albums in the database.,"SELECT Artist.ArtistId, Artist.Name
+FROM Artist
+LEFT JOIN Album ON Artist.ArtistId = Album.ArtistId
+WHERE Album.AlbumId IS NULL;",False,wrong_result,807.8,1340,169
+open,mistral:latest,item_001,List the names of all artists whose name starts with 'The'., SELECT Name FROM Artist WHERE Name LIKE 'The%';,True,match,9882.6,1806,14
+open,mistral:latest,item_002,What is the email address of the customer named Luís Gonçalves?, SELECT Email FROM Customer WHERE FirstName = 'Luís' AND LastName = 'Gonçalves';,True,match,3149.9,1809,25
+open,mistral:latest,item_003,List all track names that are longer than 300000 milliseconds., SELECT Name FROM Track WHERE Milliseconds > 300000;,True,match,2901.4,1811,18
+open,mistral:latest,item_004,Which employees have the job title 'Sales Support Agent'?," SELECT Employee.EmployeeId, Employee.FirstName, Employee.LastName FROM Employee WHERE Title = 'Sales Support Agent';",False,wrong_result,3462.7,1806,33
+open,mistral:latest,item_005,List all customers who live in Brazil.," SELECT [CustomerId], [FirstName], [LastName] FROM [Customer] WHERE [Country] = 'Brazil';",False,wrong_result,3351.1,1801,29
+open,mistral:latest,item_006,What are the names of all genres?, SELECT Name FROM Genre;,True,match,2546.1,1802,8
+open,mistral:latest,item_007,List all playlists that have 'Music' in their name., SELECT PlaylistId FROM Playlist WHERE Name LIKE '%Music%';,False,wrong_result,2868.3,1806,17
+open,mistral:latest,item_008,Find the track named 'Balls to the Wall'., SELECT TrackId FROM Track WHERE Name = 'Balls to the Wall';,False,wrong_result,2868.9,1804,17
+open,mistral:latest,item_009,List customers from the state of California (CA).," SELECT [CustomerId], [FirstName], [LastName], [Company], [City], [State], [Country], [PostalCode], [Email], [Phone], [Fax] FROM [Customer] WHERE [State] = 'CA';",False,wrong_result,4197.8,1803,54
+open,mistral:latest,item_010,What is the postal code of the employee named Andrew Adams?, SELECT [Email].[PostalCode] FROM [Employee] INNER JOIN [Customer] ON [Employee].[EmployeeId] = [Customer].[SupportRepId] INNER JOIN [Employee] AS [Email] ON [Employee].[ReportsTo] = [Email].[EmployeeId] WHERE [Employee].[FirstName] = 'Andrew' AND [Employee].[LastName] = 'Adams';,False,wrong_result,5840.4,1806,101
+open,mistral:latest,item_011,How many tracks are there in total?, SELECT COUNT(*) FROM Track;,True,match,2555.9,1801,10
+open,mistral:latest,item_012,How many customers are there from Germany?, SELECT COUNT(*) FROM Customer WHERE Country = 'Germany';,True,match,2861.8,1801,17
+open,mistral:latest,item_013,What is the total number of invoices?, SELECT COUNT(*) FROM Invoice;,True,match,2599.7,1803,11
+open,mistral:latest,item_014,What is the average unit price of a track?, SELECT AVG(Track.UnitPrice) FROM Track;,True,match,2734.3,1803,14
+open,mistral:latest,item_015,What is the total sum of all invoice totals?, SELECT SUM(Total) FROM Invoice;,True,match,2671.3,1805,12
+open,mistral:latest,item_016,How many distinct countries do customers come from?, SELECT DISTINCT Country FROM Customer;,False,wrong_result,2625.5,1802,11
+open,mistral:latest,item_017,How many albums does the artist with ArtistId 1 have?, SELECT COUNT(*) FROM Album WHERE ArtistId = 1;,True,match,2798.3,1806,16
+open,mistral:latest,item_018,What is the longest track duration in milliseconds?, SELECT MAX(Milliseconds) FROM Track;,True,match,2654.0,1803,11
+open,mistral:latest,item_019,"What is the shortest track duration in milliseconds, excluding zero?", SELECT MIN(Milliseconds) FROM Track WHERE Milliseconds > 0;,True,match,2875.8,1808,17
+open,mistral:latest,item_020,How many tracks belong to the genre 'Rock'?, SELECT COUNT(*) FROM Track INNER JOIN Genre ON Track.GenreId = Genre.GenreId WHERE Genre.Name = 'Rock';,True,match,3676.7,1805,38
+open,mistral:latest,item_021,List the names of all albums by the artist 'AC/DC'., SELECT Title FROM Album JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = 'AC/DC';,True,match,3370.0,1807,31
+open,mistral:latest,item_022,List the track names on the album 'Facelift'., SELECT Name FROM Track INNER JOIN Album ON Track.AlbumId = Album.AlbumId WHERE Album.Title = 'Facelift';,True,match,3379.2,1805,33
+open,mistral:latest,item_023,Which genre does the track 'Fast As a Shark' belong to?, SELECT GenreId FROM Track WHERE Name = 'Fast As a Shark';,False,wrong_result,2958.0,1808,18
+open,mistral:latest,item_024,List the first and last names of customers along with the city of their support representative.," SELECT Customer.FirstName, Customer.LastName, Employee.City
+   FROM Customer
+   JOIN Employee ON Customer.SupportRepId = Employee.EmployeeId;",True,match,3922.3,1810,41
+open,mistral:latest,item_025,List all track names along with their media type name.," SELECT Track.Name, MediaType.Name FROM Track
+   INNER JOIN MediaType ON Track.MediaTypeId = MediaType.MediaTypeId;",False,wrong_result,3558.1,1804,35
+open,mistral:latest,item_026,List the names of tracks in the playlist called 'Music'., SELECT Track.Name FROM Track INNER JOIN PlaylistTrack ON Track.TrackId = PlaylistTrack.TrackId INNER JOIN Playlist ON PlaylistTrack.PlaylistId = Playlist.PlaylistId WHERE Playlist.Name = 'Music';,False,wrong_result,4178.9,1806,57
+open,mistral:latest,item_027,What is the total amount billed to each customer named 'Frank Harris'?," SELECT CustomerId, SUM(Invoice.Total) as TotalBilled
+   FROM Customer
+   JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId
+   WHERE Customer.FirstName = 'Frank' AND Customer.LastName = 'Harris'
+   GROUP BY CustomerId;",False,execution_error: ambiguous column name: CustomerId,4665.7,1810,71
+open,mistral:latest,item_028,List the names of employees and the first names of the employees they report to.," SELECT e1.LastName AS EmployeeName, e2.FirstName AS ReportingEmployeeFirstName
+   FROM Employee e1
+   JOIN Employee e2 ON e1.ReportsTo = e2.EmployeeId;",False,wrong_result,4067.1,1809,55
+open,mistral:latest,item_029,"List all invoice lines for the track named 'Right Next Door to Hell', showing quantity and unit price."," SELECT InvoiceLine.Quantity, InvoiceLine.UnitPrice
+   FROM InvoiceLine
+   INNER JOIN Track ON InvoiceLine.TrackId = Track.TrackId
+   WHERE Track.Name = 'Right Next Door to Hell';",True,match,4145.1,1815,55
+open,mistral:latest,item_030,List the album title and artist name for the track 'Go Down'.," SELECT Album.Title, Artist.Name FROM Track
+   INNER JOIN Album ON Track.AlbumId = Album.AlbumId
+   INNER JOIN Artist ON Album.ArtistId = Artist.ArtistId
+   WHERE Track.Name = 'Go Down';",True,match,4236.2,1807,61
+open,mistral:latest,item_031,"For each country, how many customers are there? Order by count descending."," SELECT Country, COUNT(CustomerId) as CustomerCount FROM Customer
+   INNER JOIN Employee ON Customer.SupportRepId = Employee.EmployeeId
+   INNER JOIN [Address] ON Customer.Address = [Address].Address
+   GROUP BY Country
+   ORDER BY CustomerCount DESC;",False,execution_error: no such table: Address,4627.1,1809,72
+open,mistral:latest,item_032,"For each genre, how many tracks are there? Order by genre name."," SELECT Genre.Name, COUNT(Track.TrackId) AS TrackCount
+    FROM Genre
+    JOIN Track ON Genre.GenreId = Track.GenreId
+    GROUP BY Genre.Name
+    ORDER BY Genre.Name;",True,match,4317.2,1808,62
+open,mistral:latest,item_033,Which countries have more than 5 customers?," SELECT City, Country FROM Customer GROUP BY City, Country HAVING COUNT(CustomerId) > 5;",False,wrong_result,3154.8,1802,28
+open,mistral:latest,item_034,"For each artist, how many albums do they have? Show only artists with more than 5 albums."," SELECT Artist.Name, COUNT(Album.AlbumId) as NumberOfAlbums
+   FROM Artist
+   JOIN Album ON Artist.ArtistId = Album.ArtistId
+   GROUP BY Artist.ArtistId
+   HAVING COUNT(Album.AlbumId) > 5;",True,match,4715.8,1814,74
+open,mistral:latest,item_035,What is the total sales amount for each employee (by their supported customers' invoices)?," SELECT Employee.LastName, Employee.FirstName, SUM(Invoice.Total) as TotalSales
+   FROM Employee
+   JOIN Customer ON Employee.EmployeeId = Customer.SupportRepId
+   JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId
+   GROUP BY Employee.EmployeeId, Employee.LastName, Employee.FirstName;",False,wrong_result,5277.2,1812,92
+open,mistral:latest,item_036,"For each media type, how many tracks use it?"," SELECT MediaTypeId, COUNT(TrackId) AS TrackCount FROM Track GROUP BY MediaTypeId;",False,wrong_result,3104.9,1804,26
+open,mistral:latest,item_037,Which playlists have more than 500 tracks?," SELECT PlaylistId FROM PlaylistTrack
+   INNER JOIN Track ON PlaylistTrack.TrackId = Track.TrackId
+   GROUP BY PlaylistId
+   HAVING COUNT(TrackId) > 500;",False,execution_error: ambiguous column name: TrackId,4042.7,1805,55
+open,mistral:latest,item_038,"For each billing country, what is the total invoice amount?"," SELECT Invoice.BillingCountry, SUM(Invoice.Total) as TotalInvoiceAmount
+   FROM Invoice
+   GROUP BY Invoice.BillingCountry;",True,match,3598.2,1807,41
+open,mistral:latest,item_039,How many albums does each artist have? Show only artists with exactly 1 album.," SELECT Artist.Name, COUNT(Album.AlbumId) as NumberOfAlbums
+   FROM Artist
+   JOIN Album ON Artist.ArtistId = Album.ArtistId
+   GROUP BY Artist.ArtistId
+   HAVING COUNT(Album.AlbumId) = 1;",True,match,4670.9,1810,74
+open,mistral:latest,item_040,What is the average track length in milliseconds for each genre?," SELECT GenreId, AVG(Milliseconds) AS AverageTrackLength
+   FROM Track
+   JOIN Genre ON Track.GenreId = Genre.GenreId
+   GROUP BY GenreId;",False,execution_error: ambiguous column name: GenreId,3897.9,1806,50
+open,mistral:latest,item_041,What are the 5 most expensive tracks?," SELECT TrackId, Name, UnitPrice
+   FROM Track
+   ORDER BY UnitPrice DESC
+   LIMIT 5;",False,wrong_result,3186.6,1802,29
+open,mistral:latest,item_042,Who are the top 3 customers by total amount spent?," SELECT CustomerId, FirstName, LastName, SUM(Total) as TotalSpent
+   FROM Invoice INNER JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId
+   INNER JOIN Track ON InvoiceLine.TrackId = Track.TrackId
+   INNER JOIN Album ON Track.AlbumId = Album.AlbumId
+   INNER JOIN Customer ON Invoice.CustomerId = Customer.CustomerId
+   GROUP BY CustomerId, FirstName, LastName
+   ORDER BY TotalSpent DESC
+   LIMIT 3;",False,execution_error: ambiguous column name: CustomerId,6629.5,1805,134
+open,mistral:latest,item_043,What are the 10 longest tracks by duration?," SELECT TrackId, Name, Milliseconds FROM Track ORDER BY Milliseconds DESC LIMIT 10;",False,wrong_result,3043.0,1804,24
+open,mistral:latest,item_044,Which 5 genres have the most tracks?," SELECT GenreId, COUNT(TrackId) as TrackCount
+   FROM Track
+   GROUP BY GenreId
+   ORDER BY TrackCount DESC
+   LIMIT 5;",False,wrong_result,3662.8,1803,44
+open,mistral:latest,item_045,What are the 3 best-selling tracks by total quantity sold?," SELECT TrackId, Name, SUM(Quantity) as TotalQuantitySold
+   FROM InvoiceLine
+   JOIN Track ON InvoiceLine.TrackId = Track.TrackId
+   GROUP BY TrackId, Name
+   ORDER BY TotalQuantitySold DESC
+   LIMIT 3;",False,execution_error: ambiguous column name: TrackId,4592.0,1807,71
+open,mistral:latest,item_046,Which artist has the most albums?," SELECT Artist.Name
+   FROM Artist
+   JOIN Album ON Artist.ArtistId = Album.ArtistId
+   GROUP BY Artist.Name
+   ORDER BY COUNT(Album.AlbumId) DESC
+   LIMIT 1;",False,wrong_result,4092.5,1800,59
+open,mistral:latest,item_047,What are the 5 most recent invoices by date?, SELECT * FROM Invoice ORDER BY InvoiceDate DESC LIMIT 5;,False,wrong_result,2887.3,1806,19
+open,mistral:latest,item_048,Which 5 customers have the most invoices?," SELECT CustomerId, COUNT(InvoiceId) as InvoiceCount
+   FROM Invoice
+   JOIN Customer ON Invoice.CustomerId = Customer.CustomerId
+   GROUP BY CustomerId
+   ORDER BY InvoiceCount DESC
+   LIMIT 5;",False,execution_error: ambiguous column name: CustomerId,4255.3,1804,62
+open,mistral:latest,item_049,List the names of tracks that have never appeared on any invoice.," SELECT Track.Name
+    FROM Track
+    LEFT JOIN InvoiceLine ON Track.TrackId = InvoiceLine.TrackId
+    WHERE InvoiceLine.TrackId IS NULL;",False,wrong_result,3685.2,1807,43
+open,mistral:latest,item_050,Which customers have spent more than the average total per invoice?," SELECT CustomerId
+    FROM Invoice
+    JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId
+    GROUP BY CustomerId
+    HAVING SUM(InvoiceLine.UnitPrice * InvoiceLine.Quantity) / COUNT(InvoiceLine.InvoiceId) * (SELECT AVG(Total) FROM Invoice) > (SELECT AVG(Total) FROM Invoice);",False,wrong_result,5427.0,1806,98
+open,mistral:latest,item_051,List all invoices billed in the year 2021.," SELECT InvoiceId, InvoiceDate FROM Invoice WHERE STRFTIME('%Y', InvoiceDate) = '2021';",False,wrong_result,3354.2,1809,32
+open,mistral:latest,item_052,What distinct billing countries appear in the invoices?, SELECT DISTINCT BillingCountry FROM Invoice;,True,match,2731.4,1805,14
+open,mistral:latest,item_053,List artists who have no albums in the database.," SELECT Name FROM Artist
+   LEFT JOIN Album ON Artist.ArtistId = Album.ArtistId
+   WHERE Album.AlbumId IS NULL;",True,match,3466.4,1803,36
+top,openai/gpt-oss-120b,item_001,List the names of all artists whose name starts with 'The'.,SELECT Name FROM Artist WHERE Name LIKE 'The%';,True,match,607.1,1330,88
+top,openai/gpt-oss-120b,item_002,What is the email address of the customer named Luís Gonçalves?,SELECT Email FROM Customer WHERE FirstName = 'Luís' AND LastName = 'Gonçalves';,True,match,531.8,1331,113
+top,openai/gpt-oss-120b,item_003,List all track names that are longer than 300000 milliseconds.,SELECT Name FROM Track WHERE Milliseconds > 300000;,True,match,419.1,1586,89
+top,openai/gpt-oss-120b,item_004,Which employees have the job title 'Sales Support Agent'?,"SELECT EmployeeId, FirstName, LastName, Title FROM Employee WHERE Title = 'Sales Support Agent';",False,wrong_result,539.2,1328,101
+top,openai/gpt-oss-120b,item_005,List all customers who live in Brazil.,SELECT * FROM Customer WHERE Country = 'Brazil';,False,wrong_result,847.1,1325,91
+top,openai/gpt-oss-120b,item_006,What are the names of all genres?,SELECT Name FROM Genre;,True,match,776.5,1325,64
+top,openai/gpt-oss-120b,item_007,List all playlists that have 'Music' in their name.,"SELECT PlaylistId, Name FROM Playlist WHERE Name LIKE '%Music%';",False,wrong_result,594.1,1329,138
+top,openai/gpt-oss-120b,item_008,Find the track named 'Balls to the Wall'.,SELECT * FROM Track WHERE Name = 'Balls to the Wall';,False,wrong_result,701.7,1327,88
+top,openai/gpt-oss-120b,item_009,List customers from the state of California (CA).,SELECT * FROM Customer WHERE State = 'CA';,False,wrong_result,702.0,1327,116
+top,openai/gpt-oss-120b,item_010,What is the postal code of the employee named Andrew Adams?,SELECT PostalCode FROM Employee WHERE FirstName = 'Andrew' AND LastName = 'Adams';,True,match,547.4,1329,91
+top,openai/gpt-oss-120b,item_011,How many tracks are there in total?,SELECT COUNT(*) FROM Track;,True,match,492.8,1325,41
+top,openai/gpt-oss-120b,item_012,How many customers are there from Germany?,SELECT COUNT(*) FROM Customer WHERE Country = 'Germany';,True,match,498.2,1325,50
+top,openai/gpt-oss-120b,item_013,What is the total number of invoices?,SELECT COUNT(*) AS TotalInvoices FROM Invoice;,True,match,335.5,1325,51
+top,openai/gpt-oss-120b,item_014,What is the average unit price of a track?,SELECT AVG(UnitPrice) FROM Track;,True,match,513.5,1327,58
+top,openai/gpt-oss-120b,item_015,What is the total sum of all invoice totals?,SELECT SUM(Total) AS TotalSum FROM Invoice;,True,match,651.2,1327,74
+top,openai/gpt-oss-120b,item_016,How many distinct countries do customers come from?,SELECT COUNT(DISTINCT Country) AS DistinctCountryCount FROM Customer;,True,match,704.6,1326,64
+top,openai/gpt-oss-120b,item_017,How many albums does the artist with ArtistId 1 have?,SELECT COUNT(*) FROM Album WHERE ArtistId = 1;,True,match,528.9,1586,49
+top,openai/gpt-oss-120b,item_018,What is the longest track duration in milliseconds?,SELECT MAX(Milliseconds) AS LongestDurationMilliseconds FROM Track;,True,match,461.0,1326,43
+top,openai/gpt-oss-120b,item_019,"What is the shortest track duration in milliseconds, excluding zero?",SELECT MIN(Milliseconds) AS ShortestDurationMs FROM Track WHERE Milliseconds > 0;,True,match,399.8,1329,65
+top,openai/gpt-oss-120b,item_020,How many tracks belong to the genre 'Rock'?,SELECT COUNT(*) FROM Track AS t JOIN Genre AS g ON t.GenreId = g.GenreId WHERE g.Name = 'Rock';,True,match,807.7,1327,88
+top,openai/gpt-oss-120b,item_021,List the names of all albums by the artist 'AC/DC'.,SELECT Album.Title FROM Album JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = 'AC/DC';,True,match,741.2,1330,98
+top,openai/gpt-oss-120b,item_022,List the track names on the album 'Facelift'.,"SELECT t.Name
+FROM Track t
+JOIN Album a ON t.AlbumId = a.AlbumId
+WHERE a.Title = 'Facelift';",True,match,747.6,1328,103
+top,openai/gpt-oss-120b,item_023,Which genre does the track 'Fast As a Shark' belong to?,"SELECT g.Name
+FROM Track t
+JOIN Genre g ON t.GenreId = g.GenreId
+WHERE t.Name = 'Fast As a Shark';",True,match,644.4,1331,122
+top,openai/gpt-oss-120b,item_024,List the first and last names of customers along with the city of their support representative.,"SELECT c.FirstName, c.LastName, e.City
+FROM Customer AS c
+LEFT JOIN Employee AS e ON c.SupportRepId = e.EmployeeId;",True,match,781.9,1334,198
+top,openai/gpt-oss-120b,item_025,List the first 20 track names along with their media type name.,"SELECT Track.Name AS TrackName, MediaType.Name AS MediaTypeName
+FROM Track
+JOIN MediaType ON Track.MediaTypeId = MediaType.MediaTypeId
+ORDER BY Track.TrackId
+LIMIT 20;",True,match,792.2,1331,174
+top,openai/gpt-oss-120b,item_026,List the names of the first 20 tracks in the playlist called 'Music'.,"SELECT t.Name
+FROM Playlist p
+JOIN PlaylistTrack pt ON p.PlaylistId = pt.PlaylistId
+JOIN Track t ON pt.TrackId = t.TrackId
+WHERE p.Name = 'Music'
+ORDER BY pt.TrackId
+LIMIT 20;",False,wrong_result,679.9,1333,179
+top,openai/gpt-oss-120b,item_027,What is the total amount billed to each customer named 'Frank Harris'?,"SELECT c.CustomerId, c.FirstName, c.LastName, COALESCE(SUM(i.Total), 0) AS TotalBilled
+FROM Customer c
+LEFT JOIN Invoice i ON c.CustomerId = i.CustomerId
+WHERE c.FirstName = 'Frank' AND c.LastName = 'Harris'
+GROUP BY c.CustomerId, c.FirstName, c.LastName;",False,wrong_result,947.6,1331,333
+top,openai/gpt-oss-120b,item_028,List the names of employees and the first names of the employees they report to.,"SELECT e.FirstName || ' ' || e.LastName AS EmployeeName, m.FirstName AS ManagerFirstName
+FROM Employee e
+LEFT JOIN Employee m ON e.ReportsTo = m.EmployeeId;",False,wrong_result,916.7,1333,322
+top,openai/gpt-oss-120b,item_029,"List all invoice lines for the track named 'Right Next Door to Hell', showing quantity and unit price.","SELECT il.Quantity, il.UnitPrice
+FROM InvoiceLine AS il
+JOIN Track AS t ON il.TrackId = t.TrackId
+WHERE t.Name = 'Right Next Door to Hell';",True,match,676.1,1338,192
+top,openai/gpt-oss-120b,item_030,List the album title and artist name for the track 'Go Down'.,"SELECT Album.Title, Artist.Name
+FROM Track
+JOIN Album ON Track.AlbumId = Album.AlbumId
+JOIN Artist ON Album.ArtistId = Artist.ArtistId
+WHERE Track.Name = 'Go Down';",True,match,720.5,1331,180
+top,openai/gpt-oss-120b,item_031,"For each country, how many customers are there? Order by count descending.","SELECT Country, COUNT(*) AS CustomerCount
+FROM Customer
+GROUP BY Country
+ORDER BY CustomerCount DESC;",True,match,560.4,1332,92
+top,openai/gpt-oss-120b,item_032,"For each genre, how many tracks are there? Order by genre name.","SELECT g.Name, COUNT(t.TrackId) AS TrackCount
+FROM Genre g
+LEFT JOIN Track t ON t.GenreId = g.GenreId
+GROUP BY g.Name
+ORDER BY g.Name;",True,match,611.5,1332,180
+top,openai/gpt-oss-120b,item_033,Which countries have more than 5 customers?,"SELECT Country
+FROM Customer
+GROUP BY Country
+HAVING COUNT(*) > 5;",False,wrong_result,409.7,1326,79
+top,openai/gpt-oss-120b,item_034,"For each artist, how many albums do they have? Show only artists with more than 5 albums.","SELECT a.Name, COUNT(al.AlbumId) AS AlbumCount
+FROM Artist a
+JOIN Album al ON al.ArtistId = a.ArtistId
+GROUP BY a.ArtistId, a.Name
+HAVING COUNT(al.AlbumId) > 5;",True,match,1229.3,1338,196
+top,openai/gpt-oss-120b,item_035,What is the total sales amount for each employee (by their supported customers' invoices)?,"SELECT e.EmployeeId, e.FirstName, e.LastName, COALESCE(SUM(i.Total), 0) AS TotalSales
+FROM Employee e
+LEFT JOIN Customer c ON c.SupportRepId = e.EmployeeId
+LEFT JOIN Invoice i ON i.CustomerId = c.CustomerId
+GROUP BY e.EmployeeId, e.FirstName, e.LastName
+ORDER BY TotalSales DESC;",False,wrong_result,912.4,1334,222
+top,openai/gpt-oss-120b,item_036,"For each media type, how many tracks use it?","SELECT mt.MediaTypeId, mt.Name, COUNT(t.TrackId) AS TrackCount
+FROM MediaType AS mt
+LEFT JOIN Track AS t ON mt.MediaTypeId = t.MediaTypeId
+GROUP BY mt.MediaTypeId, mt.Name
+ORDER BY mt.MediaTypeId;",False,wrong_result,814.1,1328,183
+top,openai/gpt-oss-120b,item_037,Which playlists have more than 500 tracks?,"SELECT p.PlaylistId, p.Name
+FROM Playlist p
+JOIN PlaylistTrack pt ON p.PlaylistId = pt.PlaylistId
+GROUP BY p.PlaylistId, p.Name
+HAVING COUNT(pt.TrackId) > 500;",False,wrong_result,821.5,1326,220
+top,openai/gpt-oss-120b,item_038,"For each billing country, what is the total invoice amount?","SELECT BillingCountry, SUM(Total) AS TotalAmount FROM Invoice GROUP BY BillingCountry ORDER BY BillingCountry;",True,match,759.3,1329,107
+top,openai/gpt-oss-120b,item_039,How many albums does each artist have? Show only artists with exactly 1 album.,"SELECT a.ArtistId, a.Name, COUNT(al.AlbumId) AS AlbumCount
+FROM Artist a
+JOIN Album al ON a.ArtistId = al.ArtistId
+GROUP BY a.ArtistId, a.Name
+HAVING COUNT(al.AlbumId) = 1;",False,wrong_result,894.7,1334,209
+top,openai/gpt-oss-120b,item_040,What is the average track length in milliseconds for each genre?,"SELECT g.Name AS GenreName, AVG(t.Milliseconds) AS AverageLengthMilliseconds
+FROM Track t
+JOIN Genre g ON t.GenreId = g.GenreId
+GROUP BY g.Name;",True,match,602.4,1329,128
+top,openai/gpt-oss-120b,item_041,What are the 5 most expensive tracks?,"SELECT TrackId, Name, UnitPrice
+FROM Track
+ORDER BY UnitPrice DESC
+LIMIT 5;",False,wrong_result,671.0,1326,143
+top,openai/gpt-oss-120b,item_042,Who are the top 3 customers by total amount spent?,"SELECT c.CustomerId, c.FirstName, c.LastName, SUM(i.Total) AS TotalSpent
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId, c.FirstName, c.LastName
+ORDER BY TotalSpent DESC
+LIMIT 3;",False,wrong_result,592.1,1329,202
+top,openai/gpt-oss-120b,item_043,What are the 10 longest tracks by duration?,"SELECT TrackId, Name, Milliseconds FROM Track ORDER BY Milliseconds DESC LIMIT 10;",False,wrong_result,666.2,1327,161
+top,openai/gpt-oss-120b,item_044,Which 5 genres have the most tracks?,"SELECT g.Name, COUNT(t.TrackId) AS TrackCount
+FROM Genre g
+JOIN Track t ON g.GenreId = t.GenreId
+GROUP BY g.GenreId, g.Name
+ORDER BY TrackCount DESC
+LIMIT 5;",True,match,1088.9,1326,240
+top,openai/gpt-oss-120b,item_045,What are the 3 best-selling tracks by total quantity sold?,"SELECT t.Name, SUM(il.Quantity) AS TotalQuantity
+FROM InvoiceLine il
+JOIN Track t ON il.TrackId = t.TrackId
+GROUP BY t.TrackId, t.Name
+ORDER BY TotalQuantity DESC
+LIMIT 3;",True,match,594.5,1330,183
+top,openai/gpt-oss-120b,item_046,Which artist has the most albums?,"SELECT Artist.Name, COUNT(*) AS AlbumCount
+FROM Artist
+JOIN Album ON Artist.ArtistId = Album.ArtistId
+GROUP BY Artist.ArtistId
+ORDER BY AlbumCount DESC
+LIMIT 1;",True,match,583.3,1580,198
+top,openai/gpt-oss-120b,item_047,What are the 5 most recent invoices by date?,SELECT * FROM Invoice ORDER BY InvoiceDate DESC LIMIT 5;,False,wrong_result,594.4,1328,110
+top,openai/gpt-oss-120b,item_048,Which 5 customers have the most invoices?,"SELECT c.CustomerId, c.FirstName, c.LastName, COUNT(i.InvoiceId) AS InvoiceCount
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId, c.FirstName, c.LastName
+ORDER BY InvoiceCount DESC
+LIMIT 5;",False,wrong_result,894.2,1326,234
+top,openai/gpt-oss-120b,item_049,"List the names of the first 20 tracks that have never appeared on any invoice, ordered alphabetically.","SELECT Name
+FROM Track
+WHERE TrackId NOT IN (SELECT TrackId FROM InvoiceLine)
+ORDER BY Name ASC
+LIMIT 20;",True,match,854.4,1338,150
+top,openai/gpt-oss-120b,item_050,Which customers have spent more than the average total per invoice?,"SELECT c.CustomerId, c.FirstName, c.LastName, SUM(i.Total) AS TotalSpent
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId, c.FirstName, c.LastName
+HAVING SUM(i.Total) > (SELECT AVG(Total) FROM Invoice);",False,wrong_result,1121.9,1329,283
+top,openai/gpt-oss-120b,item_051,List all invoices billed in the year 2021.,"SELECT * FROM Invoice WHERE strftime('%Y', InvoiceDate) = '2021';",False,wrong_result,453.2,1328,105
+top,openai/gpt-oss-120b,item_052,What distinct billing countries appear in the invoices?,SELECT DISTINCT BillingCountry FROM Invoice;,True,match,436.1,1326,49
+top,openai/gpt-oss-120b,item_053,List artists who have no albums in the database.,"SELECT Name
+FROM Artist a
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Album al
+    WHERE al.ArtistId = a.ArtistId
+);",True,match,754.6,1327,178
+top,openai/gpt-oss-120b,item_001,List the names of all artists whose name starts with 'The'.,SELECT Name FROM Artist WHERE Name LIKE 'The%';,True,match,464.1,1330,83
+top,openai/gpt-oss-120b,item_002,What is the email address of the customer named Luís Gonçalves?,SELECT Email FROM Customer WHERE FirstName = 'Luís' AND LastName = 'Gonçalves';,True,match,720.1,1331,156
+top,openai/gpt-oss-120b,item_003,List all track names that are longer than 300000 milliseconds.,SELECT Name FROM Track WHERE Milliseconds > 300000;,True,match,633.1,1330,89
+top,openai/gpt-oss-120b,item_004,Which employees have the job title 'Sales Support Agent'?,"SELECT EmployeeId, FirstName, LastName, Title FROM Employee WHERE Title = 'Sales Support Agent';",False,wrong_result,494.4,1328,129
+top,openai/gpt-oss-120b,item_005,List all customers who live in Brazil.,SELECT * FROM Customer WHERE Country = 'Brazil';,False,wrong_result,417.7,1325,91
+top,openai/gpt-oss-120b,item_006,What are the names of all genres?,SELECT Name FROM Genre;,True,match,383.7,1325,64
+top,openai/gpt-oss-120b,item_007,List all playlists that have 'Music' in their name.,"SELECT PlaylistId, Name FROM Playlist WHERE Name LIKE '%Music%';",False,wrong_result,486.8,1329,138
+top,openai/gpt-oss-120b,item_008,Find the track named 'Balls to the Wall'.,SELECT * FROM Track WHERE Name = 'Balls to the Wall';,False,wrong_result,616.1,1327,90
+top,openai/gpt-oss-120b,item_009,List customers from the state of California (CA).,SELECT * FROM Customer WHERE State = 'CA';,False,wrong_result,631.6,1583,125
+top,openai/gpt-oss-120b,item_010,What is the postal code of the employee named Andrew Adams?,SELECT PostalCode FROM Employee WHERE FirstName = 'Andrew' AND LastName = 'Adams';,True,match,779.9,1329,91
+top,openai/gpt-oss-120b,item_011,How many tracks are there in total?,SELECT COUNT(*) FROM Track;,True,match,469.1,1325,41
+top,openai/gpt-oss-120b,item_012,How many customers are there from Germany?,SELECT COUNT(*) FROM Customer WHERE Country = 'Germany';,True,match,407.6,1325,50
+top,openai/gpt-oss-120b,item_013,What is the total number of invoices?,SELECT COUNT(*) AS TotalInvoices FROM Invoice;,True,match,439.7,1325,50
+top,openai/gpt-oss-120b,item_014,What is the average unit price of a track?,SELECT AVG(UnitPrice) FROM Track;,True,match,481.0,1327,58
+top,openai/gpt-oss-120b,item_015,What is the total sum of all invoice totals?,SELECT SUM(Total) AS TotalSum FROM Invoice;,True,match,932.0,1327,63
+top,openai/gpt-oss-120b,item_016,How many distinct countries do customers come from?,SELECT COUNT(DISTINCT Country) AS DistinctCountryCount FROM Customer;,True,match,598.3,1326,64
+top,openai/gpt-oss-120b,item_017,How many albums does the artist with ArtistId 1 have?,SELECT COUNT(*) FROM Album WHERE ArtistId = 1;,True,match,358.7,1330,49
+top,openai/gpt-oss-120b,item_018,What is the longest track duration in milliseconds?,SELECT MAX(Milliseconds) AS LongestDurationMilliseconds FROM Track;,True,match,898.3,1326,43
+top,openai/gpt-oss-120b,item_019,"What is the shortest track duration in milliseconds, excluding zero?",SELECT MIN(Milliseconds) AS ShortestDuration FROM Track WHERE Milliseconds > 0;,True,match,526.0,1329,64
+top,openai/gpt-oss-120b,item_020,How many tracks belong to the genre 'Rock'?,SELECT COUNT(*) FROM Track AS t JOIN Genre AS g ON t.GenreId = g.GenreId WHERE g.Name = 'Rock';,True,match,405.3,1327,88
+top,openai/gpt-oss-120b,item_021,List the names of all albums by the artist 'AC/DC'.,SELECT Album.Title FROM Album JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = 'AC/DC';,True,match,429.3,1330,102
+top,openai/gpt-oss-120b,item_022,List the track names on the album 'Facelift'.,"SELECT Track.Name
+FROM Track
+JOIN Album ON Track.AlbumId = Album.AlbumId
+WHERE Album.Title = 'Facelift';",True,match,600.6,1328,106
+top,openai/gpt-oss-120b,item_023,Which genre does the track 'Fast As a Shark' belong to?,"SELECT g.Name
+FROM Track t
+JOIN Genre g ON t.GenreId = g.GenreId
+WHERE t.Name = 'Fast As a Shark';",True,match,638.2,1331,122
+top,openai/gpt-oss-120b,item_024,List the first and last names of customers along with the city of their support representative.,"SELECT c.FirstName, c.LastName, e.City
+FROM Customer AS c
+LEFT JOIN Employee AS e ON c.SupportRepId = e.EmployeeId;",True,match,777.7,1334,198
+top,openai/gpt-oss-120b,item_025,List the first 20 track names along with their media type name.,"SELECT Track.Name AS TrackName, MediaType.Name AS MediaTypeName
+FROM Track
+JOIN MediaType ON Track.MediaTypeId = MediaType.MediaTypeId
+ORDER BY Track.TrackId
+LIMIT 20;",False,wrong_result,926.0,1331,174
+top,openai/gpt-oss-120b,item_026,List the names of the first 20 tracks in the playlist called 'Music'.,"SELECT t.Name
+FROM Playlist p
+JOIN PlaylistTrack pt ON p.PlaylistId = pt.PlaylistId
+JOIN Track t ON pt.TrackId = t.TrackId
+WHERE p.Name = 'Music'
+ORDER BY pt.TrackId
+LIMIT 20;",True,match,620.0,1333,179
+top,openai/gpt-oss-120b,item_027,What is the total amount billed to each customer named 'Frank Harris'?,"SELECT c.CustomerId, c.FirstName, c.LastName, SUM(i.Total) AS TotalBilled
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+WHERE c.FirstName = 'Frank' AND c.LastName = 'Harris'
+GROUP BY c.CustomerId, c.FirstName, c.LastName;",False,wrong_result,802.5,1331,232
+top,openai/gpt-oss-120b,item_028,List the names of employees and the first names of the employees they report to.,"SELECT e.FirstName || ' ' || e.LastName AS EmployeeName, m.FirstName AS ManagerFirstName
+FROM Employee e
+LEFT JOIN Employee m ON e.ReportsTo = m.EmployeeId;",False,wrong_result,1052.3,1333,322
+top,openai/gpt-oss-120b,item_029,"List all invoice lines for the track named 'Right Next Door to Hell', showing quantity and unit price.","SELECT il.Quantity, il.UnitPrice
+FROM InvoiceLine AS il
+JOIN Track AS t ON il.TrackId = t.TrackId
+WHERE t.Name = 'Right Next Door to Hell';",True,match,787.4,1338,192
+top,openai/gpt-oss-120b,item_030,List the album title and artist name for the track 'Go Down'.,"SELECT Album.Title, Artist.Name
+FROM Track
+JOIN Album ON Track.AlbumId = Album.AlbumId
+JOIN Artist ON Album.ArtistId = Artist.ArtistId
+WHERE Track.Name = 'Go Down';",True,match,976.8,1331,180
+top,openai/gpt-oss-120b,item_031,"For each country, how many customers are there? Order by count descending.","SELECT Country, COUNT(*) AS CustomerCount
+FROM Customer
+GROUP BY Country
+ORDER BY CustomerCount DESC;",True,match,388.5,1332,92
+top,openai/gpt-oss-120b,item_032,"For each genre, how many tracks are there? Order by genre name.","SELECT g.Name AS Genre, COUNT(t.TrackId) AS TrackCount
+FROM Genre g
+LEFT JOIN Track t ON t.GenreId = g.GenreId
+GROUP BY g.GenreId, g.Name
+ORDER BY g.Name;",True,match,680.3,1332,188
+top,openai/gpt-oss-120b,item_033,Which countries have more than 5 customers?,"SELECT Country
+FROM Customer
+GROUP BY Country
+HAVING COUNT(*) > 5;",False,wrong_result,591.3,1326,79
+top,openai/gpt-oss-120b,item_034,"For each artist, how many albums do they have? Show only artists with more than 5 albums.","SELECT Artist.Name, COUNT(Album.AlbumId) AS AlbumCount
+FROM Artist
+JOIN Album ON Album.ArtistId = Artist.ArtistId
+GROUP BY Artist.ArtistId, Artist.Name
+HAVING COUNT(Album.AlbumId) > 5;",True,match,719.6,1338,211
+top,openai/gpt-oss-120b,item_035,What is the total sales amount for each employee (by their supported customers' invoices)?,"SELECT e.EmployeeId, e.FirstName, e.LastName, COALESCE(SUM(i.Total), 0) AS TotalSales
+FROM Employee e
+LEFT JOIN Customer c ON c.SupportRepId = e.EmployeeId
+LEFT JOIN Invoice i ON i.CustomerId = c.CustomerId
+GROUP BY e.EmployeeId, e.FirstName, e.LastName
+ORDER BY TotalSales DESC;",False,wrong_result,976.8,1334,246
+top,openai/gpt-oss-120b,item_036,"For each media type, how many tracks use it?","SELECT mt.MediaTypeId, mt.Name, COUNT(t.TrackId) AS TrackCount
+FROM MediaType AS mt
+LEFT JOIN Track AS t ON mt.MediaTypeId = t.MediaTypeId
+GROUP BY mt.MediaTypeId, mt.Name
+ORDER BY mt.MediaTypeId;",False,wrong_result,1467.9,1328,183
+top,openai/gpt-oss-120b,item_037,Which playlists have more than 500 tracks?,"SELECT p.PlaylistId, p.Name
+FROM Playlist p
+JOIN PlaylistTrack pt ON p.PlaylistId = pt.PlaylistId
+GROUP BY p.PlaylistId, p.Name
+HAVING COUNT(*) > 500;",False,wrong_result,781.1,1326,214
+top,openai/gpt-oss-120b,item_038,"For each billing country, what is the total invoice amount?","SELECT BillingCountry, SUM(Total) AS TotalAmount
+FROM Invoice
+GROUP BY BillingCountry;",True,match,705.8,1329,99
+top,openai/gpt-oss-120b,item_039,How many albums does each artist have? Show only artists with exactly 1 album.,"SELECT a.ArtistId, a.Name, COUNT(al.AlbumId) AS AlbumCount
+FROM Artist a
+JOIN Album al ON a.ArtistId = al.ArtistId
+GROUP BY a.ArtistId, a.Name
+HAVING COUNT(al.AlbumId) = 1;",False,wrong_result,982.1,1334,209
+top,openai/gpt-oss-120b,item_040,What is the average track length in milliseconds for each genre?,"SELECT g.Name AS GenreName, AVG(t.Milliseconds) AS AverageLengthMs
+FROM Track t
+JOIN Genre g ON t.GenreId = g.GenreId
+GROUP BY g.Name;",True,match,1176.8,1329,182
+top,openai/gpt-oss-120b,item_041,What are the 5 most expensive tracks?,"SELECT TrackId, Name, UnitPrice
+FROM Track
+ORDER BY UnitPrice DESC
+LIMIT 5;",False,wrong_result,681.4,1326,139
+top,openai/gpt-oss-120b,item_042,Who are the top 3 customers by total amount spent?,"SELECT c.CustomerId, c.FirstName, c.LastName, SUM(i.Total) AS TotalSpent
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId, c.FirstName, c.LastName
+ORDER BY TotalSpent DESC
+LIMIT 3;",False,wrong_result,1255.1,1329,202
+top,openai/gpt-oss-120b,item_043,What are the 10 longest tracks by duration?,"SELECT TrackId, Name, Milliseconds
+FROM Track
+ORDER BY Milliseconds DESC
+LIMIT 10;",False,wrong_result,614.1,1583,140
+top,openai/gpt-oss-120b,item_044,Which 5 genres have the most tracks?,"SELECT g.Name AS Genre, COUNT(t.TrackId) AS TrackCount
+FROM Genre g
+JOIN Track t ON t.GenreId = g.GenreId
+GROUP BY g.GenreId, g.Name
+ORDER BY TrackCount DESC
+LIMIT 5;",True,match,995.3,1326,234
+top,openai/gpt-oss-120b,item_045,What are the 3 best-selling tracks by total quantity sold?,"SELECT t.Name, SUM(il.Quantity) AS TotalQuantity
+FROM InvoiceLine il
+JOIN Track t ON il.TrackId = t.TrackId
+GROUP BY t.TrackId, t.Name
+ORDER BY TotalQuantity DESC
+LIMIT 3;",True,match,1219.6,1330,183
+top,openai/gpt-oss-120b,item_046,Which artist has the most albums?,"SELECT Artist.Name, COUNT(*) AS AlbumCount
+FROM Artist
+JOIN Album ON Artist.ArtistId = Album.ArtistId
+GROUP BY Artist.ArtistId
+ORDER BY AlbumCount DESC
+LIMIT 1;",True,match,1264.4,1324,198
+top,openai/gpt-oss-120b,item_047,What are the 5 most recent invoices by date?,SELECT * FROM Invoice ORDER BY InvoiceDate DESC LIMIT 5;,False,wrong_result,407.8,1328,110
+top,openai/gpt-oss-120b,item_048,Which 5 customers have the most invoices?,"SELECT c.CustomerId, c.FirstName, c.LastName, COUNT(i.InvoiceId) AS InvoiceCount
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId, c.FirstName, c.LastName
+ORDER BY InvoiceCount DESC
+LIMIT 5;",False,wrong_result,900.1,1326,234
+top,openai/gpt-oss-120b,item_049,"List the names of the first 20 tracks that have never appeared on any invoice, ordered alphabetically.",SELECT Name FROM Track WHERE TrackId NOT IN (SELECT TrackId FROM InvoiceLine) ORDER BY Name ASC LIMIT 20;,True,match,751.5,1338,147
+top,openai/gpt-oss-120b,item_050,Which customers have spent more than the average total per invoice?,"SELECT c.CustomerId, c.FirstName, c.LastName, SUM(i.Total) AS TotalSpent
+FROM Customer c
+JOIN Invoice i ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId, c.FirstName, c.LastName
+HAVING SUM(i.Total) > (SELECT AVG(Total) FROM Invoice);",False,wrong_result,1036.7,1329,283
+top,openai/gpt-oss-120b,item_051,List all invoices billed in the year 2021.,"SELECT * FROM Invoice WHERE strftime('%Y', InvoiceDate) = '2021';",False,wrong_result,685.9,1328,104
+top,openai/gpt-oss-120b,item_052,What distinct billing countries appear in the invoices?,SELECT DISTINCT BillingCountry FROM Invoice;,True,match,544.3,1326,49
+top,openai/gpt-oss-120b,item_053,List artists who have no albums in the database.,SELECT Name FROM Artist a WHERE NOT EXISTS (SELECT 1 FROM Album al WHERE al.ArtistId = a.ArtistId);,True,match,1039.0,1327,189
+open,mistral:latest,item_001,List the names of all artists whose name starts with 'The'., SELECT Name FROM Artist WHERE Name LIKE 'The%';,True,match,10189.5,1822,14
+open,mistral:latest,item_002,What is the email address of the customer named Luís Gonçalves?, SELECT Email FROM Customer WHERE FirstName = 'Luís' AND LastName = 'Gonçalves';,True,match,3095.6,1825,25
+open,mistral:latest,item_003,List all track names that are longer than 300000 milliseconds., SELECT Track.Name FROM Track WHERE Track.Milliseconds > 300000;,True,match,3021.6,1827,22
+open,mistral:latest,item_004,Which employees have the job title 'Sales Support Agent'?, SELECT EmployeeId FROM Employee WHERE Title = 'Sales Support Agent';,False,wrong_result,2820.1,1822,18
+open,mistral:latest,item_005,List all customers who live in Brazil.," SELECT [FirstName], [LastName] FROM [Customer] WHERE [Country] = 'Brazil';",True,match,3048.1,1817,25
+open,mistral:latest,item_006,What are the names of all genres?, SELECT Name FROM Genre;,True,match,2471.0,1818,8
+open,mistral:latest,item_007,List all playlists that have 'Music' in their name., SELECT PlaylistId FROM Playlist WHERE Name LIKE '%Music%';,False,wrong_result,2830.5,1822,17
+open,mistral:latest,item_008,Find the track named 'Balls to the Wall'.," SELECT TrackId, Name, AlbumId, GenreId, MediaTypeId, Composer FROM Track WHERE Name = 'Balls to the Wall';",False,wrong_result,3378.0,1820,33
+open,mistral:latest,item_009,List customers from the state of California (CA).," SELECT Customer.FirstName, Customer.LastName FROM Customer
+   INNER JOIN Employee ON Customer.SupportRepId = Employee.EmployeeId
+   WHERE City = 'California' AND State = 'CA';",False,execution_error: ambiguous column name: City,4005.8,1819,50
+open,mistral:latest,item_010,What is the postal code of the employee named Andrew Adams?, SELECT Email FROM Employee WHERE LastName = 'Adams' AND FirstName = 'Andrew';,False,wrong_result,3018.3,1822,23
+open,mistral:latest,item_011,How many tracks are there in total?, SELECT COUNT(*) FROM Track;,True,match,2502.3,1817,10
+open,mistral:latest,item_012,How many customers are there from Germany?, SELECT COUNT(*) FROM Customer WHERE Country = 'Germany';,True,match,2736.7,1817,17
+open,mistral:latest,item_013,What is the total number of invoices?, SELECT COUNT(*) FROM Invoice;,True,match,2544.4,1819,11
+open,mistral:latest,item_014,What is the average unit price of a track?, SELECT AVG(Track.UnitPrice) FROM Track;,True,match,2653.1,1819,14
+open,mistral:latest,item_015,What is the total sum of all invoice totals?,"
+`SELECT SUM(Invoice.Total) FROM Invoice;`",True,match,2805.9,1821,17
+open,mistral:latest,item_016,How many distinct countries do customers come from?, SELECT DISTINCT Country FROM Customer;,False,wrong_result,2581.1,1818,11
+open,mistral:latest,item_017,How many albums does the artist with ArtistId 1 have?, SELECT COUNT(*) FROM Album WHERE ArtistId = 1;,True,match,2758.8,1822,16
+open,mistral:latest,item_018,What is the longest track duration in milliseconds?,SELECT MAX(Milliseconds) FROM Track;,True,match,2544.3,1819,10
+open,mistral:latest,item_019,"What is the shortest track duration in milliseconds, excluding zero?","```sql
+SELECT MIN(Track.Milliseconds) FROM Track WHERE Track.Milliseconds > 0;
+```",True,match,3221.0,1824,27
+open,mistral:latest,item_020,How many tracks belong to the genre 'Rock'?, SELECT COUNT(*) FROM Track INNER JOIN Genre ON Track.GenreId = Genre.GenreId WHERE Genre.Name = 'Rock';,True,match,3631.5,1821,38
+open,mistral:latest,item_021,List the names of all albums by the artist 'AC/DC'., SELECT Title FROM Album JOIN Artist ON Album.ArtistId = Artist.ArtistId WHERE Artist.Name = 'AC/DC';,True,match,3324.4,1823,31
+open,mistral:latest,item_022,List the track names on the album 'Facelift'.," SELECT Track.Name FROM Track
+   INNER JOIN Album ON Track.AlbumId = Album.AlbumId
+   WHERE Album.Title = 'Facelift';",True,match,3598.2,1821,39
+open,mistral:latest,item_023,Which genre does the track 'Fast As a Shark' belong to?," SELECT Genre.Name FROM Track
+INNER JOIN Genre ON Track.GenreId = Genre.GenreId
+WHERE Track.Name = 'Fast As a Shark';",True,match,3714.6,1824,43
+open,mistral:latest,item_024,List the first and last names of customers along with the city of their support representative.," SELECT Customer.FirstName, Customer.LastName, Employee.City
+   FROM Customer
+   JOIN Employee ON Customer.SupportRepId = Employee.EmployeeId;",True,match,3793.1,1826,41
+open,mistral:latest,item_025,List the first 20 track names along with their media type name.,"```sql
+SELECT Track.Name, MediaType.Name
+FROM Track
+INNER JOIN MediaType ON Track.MediaTypeId = MediaType.MediaTypeId
+LIMIT 20;
+```",False,wrong_result,3864.8,1824,46
+open,mistral:latest,item_026,List the names of the first 20 tracks in the playlist called 'Music'., SELECT Name FROM Track INNER JOIN PlaylistTrack ON Track.TrackId = PlaylistTrack.TrackId INNER JOIN Playlist ON PlaylistTrack.PlaylistId = Playlist.PlaylistId WHERE Playlist.Name = 'Music' LIMIT 20;,False,execution_error: ambiguous column name: Name,4313.4,1827,60
+open,mistral:latest,item_027,What is the total amount billed to each customer named 'Frank Harris'?,"
+```sql
+SELECT SUM(Invoice.Total) as TotalBilled
+FROM Invoice
+JOIN Customer ON Invoice.CustomerId = Customer.CustomerId
+WHERE Customer.FirstName = 'Frank' AND Customer.LastName = 'Harris';
+```",False,wrong_result,4600.5,1826,64
+open,mistral:latest,item_028,List the names of employees and the first names of the employees they report to.," SELECT Employee.Name, ReportingEmployee.FirstName FROM Employee
+JOIN Employee ReportingEmployee ON Employee.ReportsTo = ReportingEmployee.EmployeeId;",False,execution_error: no such column: Employee.Name,3989.0,1825,44
+open,mistral:latest,item_029,"List all invoice lines for the track named 'Right Next Door to Hell', showing quantity and unit price."," SELECT InvoiceLine.Quantity, InvoiceLine.UnitPrice
+   FROM InvoiceLine
+   INNER JOIN Track ON InvoiceLine.TrackId = Track.TrackId
+   WHERE Track.Name = 'Right Next Door to Hell';",True,match,4211.9,1831,55
+open,mistral:latest,item_030,List the album title and artist name for the track 'Go Down'.," SELECT Album.Title, Artist.Name
+   FROM Track
+   JOIN Album ON Track.AlbumId = Album.AlbumId
+   JOIN Artist ON Track.ArtistId = Artist.ArtistId
+   WHERE Track.Name = 'Go Down';",False,execution_error: no such column: Track.ArtistId,4279.3,1823,59
+open,mistral:latest,item_031,"For each country, how many customers are there? Order by count descending."," SELECT Country, COUNT(*) as CustomerCount FROM Customer GROUP BY Country ORDER BY CustomerCount DESC;",True,match,3137.7,1825,27
+open,mistral:latest,item_032,"For each genre, how many tracks are there? Order by genre name."," SELECT Genre.Name, COUNT(Track.TrackId) as TrackCount
+   FROM Genre
+   JOIN Track ON Genre.GenreId = Track.GenreId
+   GROUP BY Genre.Name
+   ORDER BY Genre.Name;",True,match,4296.0,1824,62
+open,mistral:latest,item_033,Which countries have more than 5 customers?," SELECT City, Country FROM Customer GROUP BY City, Country HAVING COUNT(CustomerId) > 5;",False,wrong_result,3125.8,1818,28
+open,mistral:latest,item_034,"For each artist, how many albums do they have? Show only artists with more than 5 albums."," ```sql
+SELECT Artist.Name, COUNT(Album.AlbumId) as NumberOfAlbums
+FROM Artist
+JOIN Album ON Artist.ArtistId = Album.ArtistId
+GROUP BY Artist.Name
+HAVING COUNT(Album.AlbumId) > 5;
+```",True,match,4649.4,1830,71
+open,mistral:latest,item_035,What is the total sales amount for each employee (by their supported customers' invoices)?," SELECT Employee.LastName, Employee.FirstName, SUM(Invoice.Total) as TotalSales
+   FROM Employee
+   JOIN Customer ON Employee.EmployeeId = Customer.SupportRepId
+   JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId
+   GROUP BY Employee.EmployeeId, Employee.LastName, Employee.FirstName;",False,wrong_result,5340.5,1828,92
+open,mistral:latest,item_036,"For each media type, how many tracks use it?"," SELECT MediaTypeId, COUNT(TrackId) as TrackCount FROM Track GROUP BY MediaTypeId;",False,wrong_result,3085.0,1820,26
+open,mistral:latest,item_037,Which playlists have more than 500 tracks?," SELECT PlaylistId FROM PlaylistTrack
+JOIN Playlist ON Playlist.PlaylistId = PlaylistTrack.PlaylistId
+GROUP BY Playlist.PlaylistId
+HAVING COUNT(PlaylistTrack.TrackId) > 500;",False,execution_error: ambiguous column name: PlaylistId,4186.5,1821,59
+open,mistral:latest,item_038,"For each billing country, what is the total invoice amount?","```sql
+SELECT Country, SUM(Total) as TotalInvoiceAmount
+FROM Invoice
+JOIN Customer ON Invoice.CustomerId = Customer.CustomerId
+GROUP BY Country;
+```",True,match,3727.8,1823,45
+open,mistral:latest,item_039,How many albums does each artist have? Show only artists with exactly 1 album.," SELECT Artist.Name, COUNT(Album.AlbumId) as NumberOfAlbums
+   FROM Artist
+   JOIN Album ON Artist.ArtistId = Album.ArtistId
+   GROUP BY Artist.ArtistId
+   HAVING COUNT(Album.AlbumId) = 1;",True,match,4703.8,1826,74
+open,mistral:latest,item_040,What is the average track length in milliseconds for each genre?,"```sql
+SELECT Genre.Name, AVG(Track.Milliseconds) as AverageLength
+FROM Genre
+JOIN Track ON Genre.GenreId = Track.GenreId
+GROUP BY Genre.Name;
+```",True,match,4044.7,1822,54
+open,mistral:latest,item_041,What are the 5 most expensive tracks?," SELECT TrackId, Name, UnitPrice
+   FROM Track
+   ORDER BY UnitPrice DESC
+   LIMIT 5;",False,wrong_result,3115.0,1818,29
+open,mistral:latest,item_042,Who are the top 3 customers by total amount spent?," SELECT [FirstName], [LastName], [Email] FROM [Customer]
+JOIN (
+    SELECT [CustomerId], SUM([UnitPrice] * [Quantity]) as TotalSpend
+    FROM [InvoiceLine]
+    GROUP BY [CustomerId]
+) as TotalSpends
+ON [CustomerId] = TotalSpends.[CustomerId]
+ORDER BY TotalSpends.TotalSpend DESC
+LIMIT 3;",False,execution_error: no such column: CustomerId,5578.5,1821,103
+open,mistral:latest,item_043,What are the 10 longest tracks by duration?," SELECT TrackId, Name, Milliseconds FROM Track ORDER BY Milliseconds DESC LIMIT 10;",False,wrong_result,3000.9,1820,24
+open,mistral:latest,item_044,Which 5 genres have the most tracks?," SELECT Genre.Name, COUNT(Track.TrackId) as TrackCount
+FROM Genre
+JOIN Track ON Genre.GenreId = Track.GenreId
+GROUP BY Genre.Name
+ORDER BY TrackCount DESC
+LIMIT 5;",True,match,4108.9,1819,59
+open,mistral:latest,item_045,What are the 3 best-selling tracks by total quantity sold?," SELECT TrackId, Name, SUM(Quantity) as TotalQuantitySold
+   FROM InvoiceLine
+   JOIN Track ON InvoiceLine.TrackId = Track.TrackId
+   GROUP BY TrackId, Name
+   ORDER BY TotalQuantitySold DESC
+   LIMIT 3;",False,execution_error: ambiguous column name: TrackId,4606.1,1823,71
+open,mistral:latest,item_046,Which artist has the most albums?," SELECT Artist.Name
+    FROM Artist
+    JOIN Album ON Artist.ArtistId = Album.ArtistId
+    GROUP BY Artist.Name
+    ORDER BY COUNT(Album.AlbumId) DESC
+    LIMIT 1;",False,wrong_result,4090.3,1816,59
+open,mistral:latest,item_047,What are the 5 most recent invoices by date?, SELECT * FROM Invoice ORDER BY InvoiceDate DESC LIMIT 5;,False,wrong_result,2856.0,1822,19
+open,mistral:latest,item_048,Which 5 customers have the most invoices?," SELECT CustomerId, COUNT(InvoiceId) as NumberOfInvoices
+FROM Customer JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId
+GROUP BY CustomerId
+ORDER BY NumberOfInvoices DESC
+LIMIT 5;",False,execution_error: ambiguous column name: CustomerId,4096.0,1820,57
+open,mistral:latest,item_049,"List the names of the first 20 tracks that have never appeared on any invoice, ordered alphabetically."," SELECT Name FROM Track
+   LEFT JOIN InvoiceLine ON Track.TrackId = InvoiceLine.TrackId
+   WHERE InvoiceLine.TrackId IS NULL
+   ORDER BY Name ASC
+   LIMIT 20;",True,match,4046.5,1833,53
+open,mistral:latest,item_050,Which customers have spent more than the average total per invoice?," SELECT CustomerId
+FROM Invoice
+JOIN InvoiceLine ON Invoice.InvoiceId = InvoiceLine.InvoiceId
+GROUP BY CustomerId
+HAVING SUM(InvoiceLine.UnitPrice * InvoiceLine.Quantity) > (SELECT AVG(Total) FROM Invoice);",False,wrong_result,4434.2,1822,68
+open,mistral:latest,item_051,List all invoices billed in the year 2021.," SELECT InvoiceId, InvoiceDate FROM Invoice WHERE STRFTIME('%Y', InvoiceDate) = '2021';",False,wrong_result,3321.2,1825,32
+open,mistral:latest,item_052,What distinct billing countries appear in the invoices?, SELECT DISTINCT BillingCountry FROM Invoice;,True,match,2675.3,1821,14
+open,mistral:latest,item_053,List artists who have no albums in the database.," SELECT Name FROM Artist
+LEFT JOIN Album ON Artist.ArtistId = Album.ArtistId
+WHERE Album.AlbumId IS NULL;",True,match,3307.9,1819,34

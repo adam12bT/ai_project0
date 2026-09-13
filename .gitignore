@@ -1,0 +1,7 @@
+.env
+__pycache__/
+*.pyc
+# NOTE: results/per_item.csv and results/summary.csv used to be gitignored
+# here, but the brief explicitly requires both in the handed-in repo
+# ("results/per_item.csv, summary.csv, hardware note") -- a fresh clone
+# needs them present, not regenerated. Do not re-add them to this file.
