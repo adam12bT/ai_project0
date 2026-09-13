@@ -21,6 +21,10 @@ export function getRuns() {
   return jsonFetch('/runs')
 }
 
+export function getTestStatus() {
+  return jsonFetch('/test-status')
+}
+
 export function getRunDetail(runId) {
   return jsonFetch(`/runs/${runId}`)
 }

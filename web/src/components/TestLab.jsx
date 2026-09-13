@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, Fragment } from 'react'
-import { getResults, getItems, getRuns, getRunDetail, validateItems, postRunTests, runSql, getPrompt, getSystemPrompt, saveSystemPrompt, MODEL_ROLES } from '../api'
+import { getResults, getItems, getRuns, getRunDetail, getTestStatus, validateItems, postRunTests, runSql, getPrompt, getSystemPrompt, saveSystemPrompt, MODEL_ROLES } from '../api'
 import { Loading, ErrorBox, Badge, Stat, Collapsible, CodeBlock, EmptyState, Spinner, SuccessBox } from './ui'
 
 function ResultTable({ label, result }) {
@@ -65,6 +65,7 @@ export default function TestLab() {
   const [runTestsLoading, setRunTestsLoading] = useState(false)
   const [runTestsError, setRunTestsError] = useState(null)
   const [runTestsResult, setRunTestsResult] = useState(null)
+  const [testStatus, setTestStatus] = useState(null)
 
   // System prompt editor
   const [sysPrompt, setSysPrompt] = useState('')
@@ -106,6 +107,25 @@ export default function TestLab() {
     load()
     return () => { cancelled = true }
   }, [])
+
+  useEffect(() => {
+    if (!runTestsLoading) return undefined
+    let cancelled = false
+    const poll = async () => {
+      try {
+        const status = await getTestStatus()
+        if (!cancelled) setTestStatus(status)
+      } catch {
+        // The main run request still reports the final result if polling fails.
+      }
+    }
+    poll()
+    const timer = setInterval(poll, 1000)
+    return () => {
+      cancelled = true
+      clearInterval(timer)
+    }
+  }, [runTestsLoading])
 
   const modelKeys = useMemo(() => {
     if (!activeRows) return []
@@ -213,9 +233,11 @@ export default function TestLab() {
     setRunTestsLoading(true)
     setRunTestsError(null)
     setRunTestsResult(null)
+    setTestStatus({ status: 'starting', completed: 0, total: uploadedItems.length, correct: 0, model_key: uploadModelKey })
     try {
       const result = await postRunTests({ items: uploadedItems, model_key: uploadModelKey })
       setRunTestsResult(result)
+      setTestStatus({ status: 'completed', completed: result.total, total: result.total, correct: result.rows?.filter((r) => r.correct).length ?? 0, model_key: result.model_key, model: result.model })
       // Refresh runs list
       const runs = await getRuns()
       setRunsData(runs)
@@ -335,6 +357,23 @@ export default function TestLab() {
           </div>
         )}
         {runTestsError && <div className="mt-sm"><ErrorBox error={runTestsError} /></div>}
+        {runTestsLoading && (
+          <div className="run-progress mt-sm" role="status" aria-live="polite">
+            <div className="flex items-center justify-between">
+              <strong>Test run in progress</strong>
+              <span className="run-progress-pulse">LIVE</span>
+            </div>
+            <div className="text-sm muted mt-sm">
+              {testStatus?.model || testStatus?.model_key || uploadModelKey} · Processing item {testStatus?.completed ?? 0} of {testStatus?.total ?? uploadedItems.length}
+            </div>
+            <div className="run-progress-track mt-sm">
+              <div className="run-progress-fill" style={{ width: `${Math.min(100, ((testStatus?.completed ?? 0) / (testStatus?.total || uploadedItems.length)) * 100)}%` }} />
+            </div>
+            <div className="text-sm muted mt-sm">
+              {testStatus?.correct ?? 0} correct so far. The server is evaluating each query; keep this tab open.
+            </div>
+          </div>
+        )}
         {runTestsResult && (
           <div className="mt-sm">
             <SuccessBox>

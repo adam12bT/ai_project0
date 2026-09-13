@@ -289,6 +289,39 @@ select {
   box-shadow: none;
 }
 
+.run-progress {
+  padding: 14px 16px;
+  border: 1px solid rgba(79, 140, 255, 0.45);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, rgba(79, 140, 255, 0.12), rgba(79, 140, 255, 0.04));
+}
+
+.run-progress-pulse {
+  color: var(--success);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  animation: run-progress-blink 1.2s ease-in-out infinite;
+}
+
+.run-progress-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--bg-surface-3);
+}
+
+.run-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary), #62d6a7);
+  transition: width 300ms ease;
+}
+
+@keyframes run-progress-blink {
+  50% { opacity: 0.45; }
+}
+
 .btn-secondary {
   background: var(--bg-surface-2);
   border: 1px solid var(--border);

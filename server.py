@@ -44,6 +44,10 @@ SCHEMA_PATH = os.path.join(ROOT, "schema.sql")
 STATIC_DIR = os.path.join(ROOT, "web", "dist")
 TEST_RUN_LOCK = Lock()
 OLLAMA_DISABLED = os.environ.get("DISABLE_OLLAMA", "") == "1"
+TEST_STATUS = {
+    "status": "idle", "completed": 0, "total": 0, "correct": 0,
+    "model_key": "", "model": "", "started_at": None,
+}
 
 
 def log(message):
@@ -267,6 +271,8 @@ class ApiHandler(BaseHTTPRequestHandler):
             return self.send_json({"rows": rows, "total": len(rows)})
         if path == "/api/runs":
             return self.send_json({"runs": load_runs()})
+        if path == "/api/test-status":
+            return self.send_json(TEST_STATUS)
         if path.startswith("/api/runs/"):
             run_id = path.rsplit("/", 1)[-1]
             run_path = os.path.join(RUNS_DIR, f"{run_id}.json")
@@ -388,6 +394,12 @@ class ApiHandler(BaseHTTPRequestHandler):
             return self.send_json({
                 "error": "model_key must be one of: top, cheap, open (same roles as src/run.py)."
             }, 400)
+
+        TEST_STATUS.update({
+            "status": "running", "completed": 0, "total": len(items),
+            "correct": 0, "model_key": model_key, "model": model,
+            "started_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        })
         cfg = run_module.MODEL_CONFIG[model_key]
         provider, model = cfg["provider"], cfg["model"]
         if provider == "ollama" and OLLAMA_DISABLED:
@@ -449,11 +461,14 @@ class ApiHandler(BaseHTTPRequestHandler):
                     "input_tokens": "", "output_tokens": "",
                     "gold_sql": item["gold_sql"],
                 })
+            TEST_STATUS["completed"] = index
+            TEST_STATUS["correct"] = sum(1 for row in rows if row["correct"])
         append_to_per_item_csv(rows)
         payload = save_run(rows, provider, model, len(items))
         n_correct = sum(1 for row in rows if row["correct"])
         log(f"Finished test run: {n_correct}/{len(rows)} correct — appended to results/per_item.csv "
             f"(run_id={payload['run_id']})")
+        TEST_STATUS["status"] = "completed"
         return self.send_json({
             "run_id": payload["run_id"], "rows": rows, "total": len(rows),
             "model_key": model_key, "provider": provider, "model": model,
