@@ -1,6 +1,7 @@
 """Local API for the React SQL workbench."""
 import csv
 import json
+import mimetypes
 import os
 import sqlite3
 import sys
@@ -8,7 +9,7 @@ import time
 import traceback
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(ROOT, "src"))
@@ -39,6 +40,7 @@ ITEMS_PATH = os.path.join(ROOT, "data", "items.jsonl")
 RESULTS_PATH = os.path.join(ROOT, "results", "per_item.csv")
 RUNS_DIR = os.path.join(ROOT, "results", "runs")
 SCHEMA_PATH = os.path.join(ROOT, "schema.sql")
+STATIC_DIR = os.path.join(ROOT, "web", "dist")
 
 
 def log(message):
@@ -220,6 +222,34 @@ class ApiHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def serve_static(self, path):
+        if not os.path.isdir(STATIC_DIR):
+            return False
+
+        relative_path = os.path.normpath(unquote(path.lstrip("/")))
+        if relative_path in ("", "."):
+            relative_path = "index.html"
+        if relative_path.startswith(".."):
+            return False
+
+        file_path = os.path.join(STATIC_DIR, relative_path)
+        if not os.path.isfile(file_path):
+            # Vite's client-side routes need to resolve to the app shell.
+            file_path = os.path.join(STATIC_DIR, "index.html")
+        try:
+            with open(file_path, "rb") as file:
+                data = file.read()
+        except OSError:
+            return False
+
+        content_type = mimetypes.guess_type(file_path)[0] or "application/octet-stream"
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+        return True
+
     def do_OPTIONS(self):
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -282,6 +312,8 @@ class ApiHandler(BaseHTTPRequestHandler):
                 "gold": exec_sql(gold_sql),
                 "model": exec_sql(model_sql),
             })
+        if self.serve_static(path):
+            return
         self.send_json({"error": "Not found"}, 404)
 
     def do_POST(self):
@@ -408,11 +440,11 @@ class ApiHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("API_PORT", "8000"))
-    log(f"SQL workbench API running on http://localhost:{port}")
+    port = int(os.environ.get("PORT", os.environ.get("API_PORT", "8000")))
+    log(f"SQL workbench API running on port {port}")
     log("Watching for requests below. Ctrl+C to stop.")
     try:
-        ThreadingHTTPServer(("127.0.0.1", port), ApiHandler).serve_forever()
+        ThreadingHTTPServer(("0.0.0.0", port), ApiHandler).serve_forever()
     except OSError as error:
         log(f"Could not start server on port {port}: {error}")
         log(f"This usually means something is already listening on port {port}. "
