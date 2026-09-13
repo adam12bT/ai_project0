@@ -1,3 +1,13 @@
+---
+title: Text-to-SQL Workbench
+emoji: ":bar_chart:"
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Project 0 — Bake-Off: Text-to-SQL
 
 **Task:** Given a natural-language question and the schema of the Chinook
