@@ -41,10 +41,12 @@ def safe_output_tokens(user_prompt, system_prompt, requested_tokens):
 
 
 def call_groq(model_name, user_prompt, system_prompt=None,
-              temperature=0, max_tokens=300, max_retries=5):
+              temperature=0, max_tokens=300, max_retries=None):
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
         raise RuntimeError("GROQ_API_KEY is not set")
+    if max_retries is None:
+        max_retries = int(os.environ.get("GROQ_MAX_RETRIES", "5"))
 
     messages = []
     if system_prompt:
@@ -91,6 +93,11 @@ def call_groq(model_name, user_prompt, system_prompt=None,
                 retry_after = min(max(retry_after, 3), 60)
                 time.sleep(retry_after)
                 continue
+            if e.code == 429:
+                raise RuntimeError(
+                    "Groq rate limit reached. Wait for the limit to reset, "
+                    "then retry with a smaller batch."
+                ) from e
             raise
 
 
