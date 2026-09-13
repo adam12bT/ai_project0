@@ -414,6 +414,7 @@ class ApiHandler(BaseHTTPRequestHandler):
 
         log(f"Starting test run: model_key={model_key} ({provider}/{model}), {len(items)} items")
         rows = []
+        stopped_for_rate_limit = False
         for index, item in enumerate(items, start=1):
             item_id = item.get("id", "unknown")
             question = str(item.get("question", "")).strip()
@@ -454,6 +455,7 @@ class ApiHandler(BaseHTTPRequestHandler):
             except Exception as error:
                 log(f"  [{index}/{len(items)}] {item_id}: ERROR — {error}")
                 traceback.print_exc()
+                rate_limited = provider == "groq" and "rate limit" in str(error).lower()
                 rows.append({
                     "model_key": model_key, "model_name": model,
                     "item_id": item_id, "question": question,
@@ -462,6 +464,12 @@ class ApiHandler(BaseHTTPRequestHandler):
                     "input_tokens": "", "output_tokens": "",
                     "gold_sql": item["gold_sql"],
                 })
+                if rate_limited:
+                    stopped_for_rate_limit = True
+                    TEST_STATUS["completed"] = len(rows)
+                    TEST_STATUS["correct"] = sum(1 for row in rows if row["correct"])
+                    log("Stopping this batch after the first Groq rate-limit response.")
+                    break
             TEST_STATUS["completed"] = index
             TEST_STATUS["correct"] = sum(1 for row in rows if row["correct"])
         append_to_per_item_csv(rows)
@@ -469,7 +477,7 @@ class ApiHandler(BaseHTTPRequestHandler):
         n_correct = sum(1 for row in rows if row["correct"])
         log(f"Finished test run: {n_correct}/{len(rows)} correct — appended to results/per_item.csv "
             f"(run_id={payload['run_id']})")
-        TEST_STATUS["status"] = "completed"
+        TEST_STATUS["status"] = "rate_limited" if stopped_for_rate_limit else "completed"
         return self.send_json({
             "run_id": payload["run_id"], "rows": rows, "total": len(rows),
             "model_key": model_key, "provider": provider, "model": model,
