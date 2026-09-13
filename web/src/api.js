@@ -1,4 +1,5 @@
-const BASE = '/api'
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+const BASE = `${API_URL}/api`
 
 async function jsonFetch(path, options) {
   const res = await fetch(`${BASE}${path}`, options)
