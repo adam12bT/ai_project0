@@ -12,8 +12,18 @@ WORKDIR /app
 ENV PORT=7860
 ENV PYTHONUNBUFFERED=1
 
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends curl ca-certificates \
+	&& rm -rf /var/lib/apt/lists/*
+
 COPY . ./
 COPY --from=frontend /app/web/dist ./web/dist
+
+# Hugging Face rejects regular Git binary objects. The deployment workflow
+# excludes this database from the Space commit and downloads the public copy.
+RUN curl --fail --location \
+	https://raw.githubusercontent.com/adam12bT/ai_project0/main/Chinook_Sqlite.sqlite \
+	--output Chinook_Sqlite.sqlite
 
 EXPOSE 7860
 CMD ["python", "server.py"]

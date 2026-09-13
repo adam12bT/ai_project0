@@ -36,4 +36,17 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_SPACE: ${{ secrets.HF_SPACE }}
         run: |
-          git push --force "https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}.git" HEAD:main
+          rm -rf "$RUNNER_TEMP/hf-space"
+          mkdir -p "$RUNNER_TEMP/hf-space"
+          git archive HEAD | tar -x -C "$RUNNER_TEMP/hf-space"
+          rm -f \
+            "$RUNNER_TEMP/hf-space/Chinook_Sqlite.sqlite" \
+            "$RUNNER_TEMP/hf-space/data.zip"
+
+          git -C "$RUNNER_TEMP/hf-space" init -b main
+          git -C "$RUNNER_TEMP/hf-space" config user.name "github-actions[bot]"
+          git -C "$RUNNER_TEMP/hf-space" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "$RUNNER_TEMP/hf-space" add -A
+          git -C "$RUNNER_TEMP/hf-space" commit -m "Deploy Space from ${GITHUB_SHA}"
+          git -C "$RUNNER_TEMP/hf-space" remote add hf "https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}.git"
+          git -C "$RUNNER_TEMP/hf-space" push --force hf HEAD:main
