@@ -6,6 +6,7 @@ import os
 import sqlite3
 import sys
 import time
+from threading import Lock
 import traceback
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -41,6 +42,8 @@ RESULTS_PATH = os.path.join(ROOT, "results", "per_item.csv")
 RUNS_DIR = os.path.join(ROOT, "results", "runs")
 SCHEMA_PATH = os.path.join(ROOT, "schema.sql")
 STATIC_DIR = os.path.join(ROOT, "web", "dist")
+TEST_RUN_LOCK = Lock()
+OLLAMA_DISABLED = os.environ.get("DISABLE_OLLAMA", "") == "1"
 
 
 def log(message):
@@ -336,6 +339,10 @@ class ApiHandler(BaseHTTPRequestHandler):
             model = body.get("model", "mistral:latest")
             if not question:
                 return self.send_json({"error": "Enter a question first."}, 400)
+            if provider == "ollama" and OLLAMA_DISABLED:
+                return self.send_json({
+                    "error": "Ollama is available only when the app runs locally. Select a Groq model in the hosted Space."
+                }, 400)
             text, latency_ms, usage = call_model(
                 provider, model, build_user_prompt(question),
                 system_prompt=get_system_prompt(), temperature=0, max_tokens=run_module.MAX_TOKENS,
@@ -365,6 +372,16 @@ class ApiHandler(BaseHTTPRequestHandler):
             return self.send_json({"error": str(error)}, 500)
 
     def run_tests(self, body):
+        if not TEST_RUN_LOCK.acquire(blocking=False):
+            return self.send_json({
+                "error": "A test run is already in progress. Wait for it to finish before starting another."
+            }, 409)
+        try:
+            return self._run_tests(body)
+        finally:
+            TEST_RUN_LOCK.release()
+
+    def _run_tests(self, body):
         items = body.get("items", [])
         model_key = body.get("model_key", "")
         if model_key not in run_module.MODEL_CONFIG:
@@ -373,6 +390,10 @@ class ApiHandler(BaseHTTPRequestHandler):
             }, 400)
         cfg = run_module.MODEL_CONFIG[model_key]
         provider, model = cfg["provider"], cfg["model"]
+        if provider == "ollama" and OLLAMA_DISABLED:
+            return self.send_json({
+                "error": "Ollama is available only when the app runs locally. Use a Groq model in the hosted Space."
+            }, 400)
         if not items or not isinstance(items, list):
             return self.send_json({"error": "Upload a JSONL file with test items first."}, 400)
         if len(items) > 100:

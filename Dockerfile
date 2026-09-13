@@ -11,6 +11,7 @@ FROM python:3.11-slim
 WORKDIR /app
 ENV PORT=7860
 ENV PYTHONUNBUFFERED=1
+ENV DISABLE_OLLAMA=1
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends curl ca-certificates \
