@@ -24,6 +24,29 @@ GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
 # short. Override with GROQ_CONTEXT_LIMIT if you use a different model.
 DEFAULT_CONTEXT_LIMIT = 131072
 TOKEN_SAFETY_MARGIN = 128
+_next_request_at = 0.0
+
+
+def _reset_seconds(value):
+    """Convert Groq reset values such as '6s' or '1m2.5s' to seconds."""
+    if not value:
+        return 0.0
+    text = str(value).strip().lower()
+    total = 0.0
+    number = ""
+    units = {"h": 3600, "m": 60, "s": 1, "ms": 0.001}
+    index = 0
+    while index < len(text):
+        if text[index].isdigit() or text[index] == ".":
+            number += text[index]
+            index += 1
+            continue
+        unit = "ms" if text[index:index + 2] == "ms" else text[index]
+        if number and unit in units:
+            total += float(number) * units[unit]
+        number = ""
+        index += len(unit)
+    return total
 
 
 def safe_output_tokens(user_prompt, system_prompt, requested_tokens):
@@ -42,6 +65,7 @@ def safe_output_tokens(user_prompt, system_prompt, requested_tokens):
 
 def call_groq(model_name, user_prompt, system_prompt=None,
               temperature=0, max_tokens=300, max_retries=None):
+    global _next_request_at
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
         raise RuntimeError("GROQ_API_KEY is not set")
@@ -72,10 +96,22 @@ def call_groq(model_name, user_prompt, system_prompt=None,
 )
 
     for attempt in range(max_retries):
+        wait_seconds = _next_request_at - time.time()
+        if wait_seconds > 0:
+            time.sleep(wait_seconds)
         t0 = time.perf_counter()
         try:
             with urllib.request.urlopen(req, timeout=60) as resp:
                 body = json.loads(resp.read())
+                remaining_tokens = resp.headers.get("x-ratelimit-remaining-tokens")
+                reset_tokens = _reset_seconds(resp.headers.get("x-ratelimit-reset-tokens"))
+                remaining_requests = resp.headers.get("x-ratelimit-remaining-requests")
+                reset_requests = _reset_seconds(resp.headers.get("x-ratelimit-reset-requests"))
+                estimated_input_tokens = max(1, (len(user_prompt) + len(system_prompt or "") + 3) // 4)
+                if remaining_tokens and int(remaining_tokens) <= estimated_input_tokens + 128:
+                    _next_request_at = max(_next_request_at, time.time() + reset_tokens)
+                if remaining_requests and int(remaining_requests) <= 1:
+                    _next_request_at = max(_next_request_at, time.time() + reset_requests)
             latency_ms = (time.perf_counter() - t0) * 1000
             text = body["choices"][0]["message"]["content"]
             usage = {
@@ -94,9 +130,14 @@ def call_groq(model_name, user_prompt, system_prompt=None,
                 time.sleep(retry_after)
                 continue
             if e.code == 429:
+                reset = max(
+                    _reset_seconds(e.headers.get("x-ratelimit-reset-tokens")),
+                    _reset_seconds(e.headers.get("x-ratelimit-reset-requests")),
+                )
+                _next_request_at = max(_next_request_at, time.time() + reset)
                 raise RuntimeError(
-                    "Groq rate limit reached. Wait for the limit to reset, "
-                    "then retry with a smaller batch."
+                    f"Groq rate limit reached. Retry in about {max(1, round(reset))} seconds "
+                    "or use a smaller batch."
                 ) from e
             raise
 
