@@ -13,6 +13,7 @@ ENV PORT=7860
 ENV PYTHONUNBUFFERED=1
 ENV DISABLE_OLLAMA=1
 ENV GROQ_MAX_RETRIES=1
+ENV GROQ_REQUEST_DELAY_SECONDS=12
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends curl ca-certificates \
