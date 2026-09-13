@@ -1,6 +1,6 @@
 ---
 title: Text-to-SQL Workbench
-emoji: ":bar_chart:"
+emoji: "📊"
 colorFrom: blue
 colorTo: indigo
 sdk: docker
